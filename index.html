@@ -672,12 +672,12 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
       </div>
       <div class="bet-card">
         <div class="bet-label">Closest to the pin</div>
-        <div class="bet-desc">On every par 3. First group marks it, second group remarks if inside, final group calls the winner.</div>
-        <div class="bet-amount">$5 per player</div>
+        <div class="bet-desc">One designated par 3 on the front, one on the back. First group marks it, second group remarks if inside, final group calls the winner.</div>
+        <div class="bet-amount">$5 per player per hole</div>
       </div>
       <div style="margin-top:14px;padding:12px 14px;background:var(--mint-bg);border-radius:10px;">
-        <div style="font-size:13px;font-weight:700;color:var(--pine);">Total per person: $25</div>
-        <div style="font-size:12px;color:var(--fairway);margin-top:2px;">$250 total in play per round.</div>
+        <div style="font-size:13px;font-weight:700;color:var(--pine);">Total per person: $30</div>
+        <div style="font-size:12px;color:var(--fairway);margin-top:2px;">$20 main pot + $10 CTP ($5 x 2 holes). $300 total in play per round.</div>
       </div>
     </div>
   </div>
@@ -987,7 +987,7 @@ function renderScorer(){
   } else {
     // CTP tracker
     var par3s = c.holes.filter(function(ho){ return ho.par === 3; });
-    h+='<div class="s-skin-header">Closest to the pin on par 3s. First group marks, second group remarks if closer, final group calls winner.</div>';
+    h+='<div class="s-skin-header">Closest to the pin. One designated par 3 on the front, one on the back. $10/player per hole. First group marks, second remarks if closer, final group calls winner.</div>';
 
     par3s.forEach(function(ho){
       var hIdx = ho.num - 1;
