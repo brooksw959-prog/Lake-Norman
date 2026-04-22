@@ -826,8 +826,9 @@ function renderScorer(){
       h+='<span class="s-hole-meta">Par '+ho.par+' &middot; Hdcp '+ho.hdcp+'</span>';
       h+='</div>';
 
-      // CTP banner on par 3s
-      if(ho.par === 3) {
+      // CTP banner on designated holes
+      var ctpBannerHoles = ss.course === 'verdict' ? [8, 13] : [2, 12];
+      if(ctpBannerHoles.indexOf(ho.num) !== -1) {
         var ctpData = ss.ctp[ss.course][hi] || {leader:'',status:'open'};
         var ctpBg = ctpData.status==='final'?'var(--mint-bg)':ctpData.status==='marked'?'#FFF3E0':'var(--sand)';
         var ctpColor = ctpData.status==='final'?'var(--pine)':ctpData.status==='marked'?'var(--amber)':'var(--ink3)';
@@ -985,11 +986,13 @@ function renderScorer(){
     });
 
   } else {
-    // CTP tracker
-    var par3s = c.holes.filter(function(ho){ return ho.par === 3; });
-    h+='<div class="s-skin-header">Closest to the pin. One designated par 3 on the front, one on the back. $10/player per hole. First group marks, second remarks if closer, final group calls winner.</div>';
+    // CTP tracker - designated holes per course
+    var ctpDesignated = ss.course === 'verdict' ? [8, 13] : [2, 12];
+    var ctpHoles = c.holes.filter(function(ho){ return ctpDesignated.indexOf(ho.num) !== -1; });
+    var courseCtpText = ss.course === 'verdict' ? 'Hole 8 (front) and Hole 13 (back)' : 'Hole 2 (front) and Hole 12 (back)';
+    h+='<div class="s-skin-header">Closest to the pin. '+courseCtpText+'. $5/player per hole. First group marks, second remarks if closer, final group calls winner.</div>';
 
-    par3s.forEach(function(ho){
+    ctpHoles.forEach(function(ho){
       var hIdx = ho.num - 1;
       var ctpData = ss.ctp[ss.course][hIdx] || { leader: '', status: 'open' };
       var statusLabel = ctpData.status === 'final' ? 'Final' : ctpData.status === 'marked' ? 'Marked' : 'Open';
@@ -1022,7 +1025,7 @@ function renderScorer(){
 
     // CTP Winners summary
     var winners = [];
-    par3s.forEach(function(ho){
+    ctpHoles.forEach(function(ho){
       var ctpData = ss.ctp[ss.course][ho.num-1];
       if(ctpData && ctpData.leader && ctpData.status === 'final'){
         winners.push({ hole: ho.num, name: ctpData.leader });
