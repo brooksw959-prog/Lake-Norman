@@ -469,7 +469,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   <button data-page="menu">Menu</button>
   <button data-page="handicaps">Handicaps</button>
   <button data-page="gambling">Gambling</button>
-  <button data-page="scorer">Leaderboard</button>
+  <button data-page="scorer">Scorecard</button>
   <button data-page="stats">Stats</button>
   <button data-page="photos">Photos</button>
 </nav>
@@ -600,12 +600,6 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   </div>
 
   <div id="sat-grouping-controls" style="padding:12px 16px;">
-  </div>
-
-  <div class="section-card" style="margin:0 16px 12px;">
-    <div class="sc-body" style="font-size:13px;color:var(--ink3);">
-      Saturday groups tiered by Friday Stableford score. Bottom 4 go off first, middle 3 next, top 3 go off last.
-    </div>
   </div>
 
 </div>
@@ -766,7 +760,7 @@ var SATURDAY_GROUPS = [
   { name: 'Group 3', time: '1:20p', players: [] }
 ];
 
-var ss = { view:'leaderboard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}}, statsPlayer:null, openCard:null, votes:{} };
+var ss = { view:'scorecard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}}, statsPlayer:null, openCard:null, votes:{} };
 PLAYERS.forEach(function(p){ ss.scores[p.name]={verdict:new Array(18).fill(null),birkdale:new Array(18).fill(null)}; });
 
 function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:4,c:ss.course,d:d,ctp:ss.ctp,votes:ss.votes});}catch(e){}}
@@ -1318,9 +1312,9 @@ function hasFridayScores() {
 // Bottom 4 -> Group 1 (1:00p), Middle 3 -> Group 2 (1:10p), Top 3 -> Group 3 (1:20p)
 function autoBalanceGroups() {
   var ranked = getFridayRanking();
-  var g1 = ranked.slice(7,10).map(function(p){return p.name;}).concat([ranked[6].name]);
-  var g2 = ranked.slice(4,7).map(function(p){return p.name;});
-  var g3 = ranked.slice(0,4).map(function(p){return p.name;}).slice(0,3);
+  var g1 = ranked.slice(7,10).concat([ranked[6]]).map(function(p){return p.name;});
+  var g2 = ranked.slice(3,6).map(function(p){return p.name;});
+  var g3 = ranked.slice(0,3).map(function(p){return p.name;});
   return [g1, g2, g3];
 }
 
@@ -1337,10 +1331,7 @@ function shuffleGroups() {
     return arr;
   }
   shuffle(bot); shuffle(mid); shuffle(top);
-  var g1 = bot.map(function(p){return p.name;});
-  var g2 = mid.map(function(p){return p.name;});
-  var g3 = top.map(function(p){return p.name;});
-  return [g1, g2, g3];
+  return [bot.map(function(p){return p.name;}), mid.map(function(p){return p.name;}), top.map(function(p){return p.name;})];
 }
 
 function renderSaturdayGroups() {
@@ -1369,7 +1360,7 @@ function renderSaturdayGroups() {
   g3el.textContent = satGroups[2].join(', ');
 
   var h = '<div class="sat-gen-wrap">';
-  h += '<div class="sat-gen-title">Friday results &rarr; Saturday groups</div>';
+  h += '<div class="sat-gen-title">Friday results &rarr; Saturday tee times</div>';
   h += '<div class="sat-gen-sub">Tiered by Friday Stableford points. Bottom 4 go off first, middle 3 next, top 3 last.</div>';
 
   ranked.forEach(function(p, i) {
