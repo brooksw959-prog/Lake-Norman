@@ -826,23 +826,52 @@ function renderScorer(){
       h+='<span class="s-hole-meta">Par '+ho.par+' &middot; Hdcp '+ho.hdcp+'</span>';
       h+='</div>';
 
-      // CTP banner on designated holes
+      // CTP - designated holes and reminder on hole before
       var ctpBannerHoles = ss.course === 'verdict' ? [8, 13] : [2, 12];
+      var ctpReminderHoles = ss.course === 'verdict' ? [7, 12] : [1, 11];
+
+      // Reminder on the hole before a CTP hole
+      if(ctpReminderHoles.indexOf(ho.num) !== -1) {
+        var nextCtp = ctpBannerHoles[ctpReminderHoles.indexOf(ho.num)];
+        h+='<div style="margin:0 14px 8px;padding:10px 12px;background:#FFF3E0;border-radius:8px;display:flex;align-items:center;gap:8px;">';
+        h+='<div style="width:24px;height:24px;border-radius:50%;background:var(--amber);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">!</div>';
+        h+='<div style="font-size:13px;font-weight:600;color:var(--amber);">Heads up: Hole '+nextCtp+' is CTP. Mark your closest shot on the green.</div>';
+        h+='</div>';
+      }
+
+      // Full CTP controls on designated holes
       if(ctpBannerHoles.indexOf(ho.num) !== -1) {
         var ctpData = ss.ctp[ss.course][hi] || {leader:'',status:'open'};
         var ctpBg = ctpData.status==='final'?'var(--mint-bg)':ctpData.status==='marked'?'#FFF3E0':'var(--sand)';
         var ctpColor = ctpData.status==='final'?'var(--pine)':ctpData.status==='marked'?'var(--amber)':'var(--ink3)';
-        h+='<div style="margin:0 14px;padding:10px 12px;background:'+ctpBg+';border-radius:8px;display:flex;align-items:center;justify-content:space-between;">';
-        h+='<div style="font-size:13px;font-weight:600;color:'+ctpColor+';">';
-        if(ctpData.status==='final' && ctpData.leader) {
-          h+='CTP Winner: '+ctpData.leader;
-        } else if(ctpData.status==='marked' && ctpData.leader) {
-          h+='CTP Leader: '+ctpData.leader;
-        } else {
-          h+='CTP: Mark your closest shot';
-        }
-        h+='</div>';
+        var ctpBorder = ctpData.status==='final'?'var(--fairway)':ctpData.status==='marked'?'var(--amber)':'var(--sand-dark)';
+
+        h+='<div style="margin:0 14px 8px;padding:12px;background:'+ctpBg+';border-radius:10px;border:1.5px solid '+ctpBorder+';">';
+        h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+        h+='<div style="font-size:14px;font-weight:700;color:'+ctpColor+';">Closest to the pin - $50 pot</div>';
         h+='<div style="font-size:11px;font-weight:600;color:'+ctpColor+';text-transform:uppercase;">'+ctpData.status+'</div>';
+        h+='</div>';
+
+        h+='<div style="margin-bottom:8px;">';
+        h+='<select data-ctp-hole="'+hi+'" data-ctp-field="leader" style="width:100%;padding:10px;font-size:14px;font-family:\'DM Sans\',sans-serif;border:1.5px solid var(--sand-dark);border-radius:8px;background:var(--white);color:var(--ink);">';
+        h+='<option value="">Select closest player</option>';
+        PLAYERS.forEach(function(pl){
+          h+='<option value="'+pl.name+'"'+(ctpData.leader===pl.name?' selected':'')+'>'+pl.name+'</option>';
+        });
+        h+='</select>';
+        h+='</div>';
+
+        h+='<div style="display:flex;gap:6px;">';
+        ['open','marked','final'].forEach(function(st){
+          var label = st === 'open' ? 'Open' : st === 'marked' ? 'Marked' : 'Final';
+          var isAct = ctpData.status === st;
+          h+='<button data-ctp-hole="'+hi+'" data-ctp-status="'+st+'" style="flex:1;padding:8px;font-size:12px;font-weight:600;border-radius:6px;border:1.5px solid '+(isAct?'var(--pine)':'var(--sand-dark)')+';background:'+(isAct?'var(--mint-bg)':'var(--white)')+';color:'+(isAct?'var(--pine)':'var(--ink3)')+';cursor:pointer;font-family:\'DM Sans\',sans-serif;">'+label+'</button>';
+        });
+        h+='</div>';
+
+        if(ctpData.status==='final' && ctpData.leader) {
+          h+='<div style="margin-top:8px;text-align:center;font-size:14px;font-weight:700;color:var(--pine);">Winner: '+ctpData.leader+'</div>';
+        }
         h+='</div>';
       }
 
