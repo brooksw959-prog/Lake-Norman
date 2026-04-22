@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Billchelor Weekend</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pine: #1B3A2A;
+  --pine-light: #2A5A3F;
+  --fairway: #3A7A5A;
+  --mint: #9FE1CB;
+  --mint-bg: #E8F5EE;
+  --cream: #FAFAF7;
+  --sand: #F0EDE6;
+  --sand-dark: #E0DCD3;
+  --bark: #8B7355;
+  --bark-light: #A89272;
+  --ink: #1A1A18;
+  --ink2: #5A5A55;
+  --ink3: #9A9A92;
+  --white: #FFFFFF;
+  --red: #C0392B;
+  --amber: #D4850B;
+  --gold: #B7950B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'DM Sans', -apple-system, sans-serif; background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+.hero {
+  background: var(--pine);
+  padding: 48px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(159,225,203,0.15);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -30px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 1px solid rgba(159,225,203,0.1);
+}
+.hero-eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--mint); font-weight: 600; margin-bottom: 12px; }
+.hero h1 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; color: var(--white); line-height: 1.15; margin-bottom: 6px; }
+.hero-sub { font-size: 14px; color: var(--mint); opacity: 0.8; }
+.hero-addr { font-size: 12px; color: rgba(159,225,203,0.5); margin-top: 8px; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--sand-dark);
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 8px;
+}
+nav::-webkit-scrollbar { display: none; }
+nav button {
+  flex-shrink: 0;
+  padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
+
+.page { display: none; padding-bottom: 40px; }
+.page.vis { display: block; }
+
+.day-banner {
+  padding: 20px 24px 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.day-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--pine); }
+.day-desc { font-size: 13px; color: var(--ink3); }
+
+.event {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--sand);
+  display: flex;
+  gap: 14px;
+}
+.ev-time {
+  min-width: 56px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bark);
+  padding-top: 2px;
+  text-align: right;
+}
+.ev-body { flex: 1; }
+.ev-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.ev-sub { font-size: 13px; color: var(--ink2); line-height: 1.55; }
+.ev-addr { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+
+.group-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--sand);
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin: 4px 4px 0 0;
+  font-size: 12px;
+  color: var(--ink2);
+}
+.group-pill .gtime { font-weight: 600; color: var(--bark); margin-right: 4px; }
+
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 4px 4px 0 0;
+}
+.chip-teal { background: var(--mint-bg); color: var(--pine-light); }
+.chip-sand { background: var(--sand); color: var(--bark); }
+.chip-amber { background: #FFF3E0; color: #854F0B; }
+
+.section-card {
+  margin: 16px 16px 0;
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid var(--sand-dark);
+  overflow: hidden;
+}
+.sc-header {
+  padding: 14px 18px;
+  background: var(--sand);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.sc-body { padding: 14px 18px; font-size: 13px; color: var(--ink2); line-height: 1.7; }
+
+.arrival-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--sand);
+  font-size: 14px;
+}
+.arrival-row:last-child { border-bottom: none; }
+.ar-names { font-weight: 500; color: var(--ink); }
+.ar-time { font-weight: 600; color: var(--bark); font-size: 13px; }
+
+.hdcp-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sand);
+  font-size: 14px;
+}
+.hdcp-row:last-child { border-bottom: none; }
+.hdcp-name { color: var(--ink); font-weight: 500; }
+.hdcp-val { font-weight: 700; color: var(--pine); font-family: 'DM Sans', sans-serif; }
+
+.menu-meal {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--sand);
+}
+.menu-meal:last-child { border-bottom: none; }
+.mm-when { font-size: 11px; font-weight: 600; color: var(--bark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.mm-items { font-size: 14px; color: var(--ink); line-height: 1.6; }
+
+.rules-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--pine);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.rules-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sand);
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.55;
+}
+.rules-row:last-child { border-bottom: none; }
+
+.bet-card {
+  margin: 10px 0;
+  padding: 12px 14px;
+  background: var(--sand);
+  border-radius: 10px;
+}
+.bet-label { font-size: 12px; font-weight: 700; color: var(--pine); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.bet-desc { font-size: 13px; color: var(--ink2); line-height: 1.5; }
+.bet-amount { font-size: 13px; font-weight: 700; color: var(--bark); margin-top: 4px; }
+
+.scorer-section { padding: 16px; }
+.scorer-section h3 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--pine); margin-bottom: 12px; }
+
+.scorer-app {
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid var(--sand-dark);
+  overflow: hidden;
+}
+.s-tabs { display: flex; border-bottom: 1px solid var(--sand-dark); }
+.s-tab {
+  flex: 1; padding: 10px 0; text-align: center;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--ink3); background: var(--sand); border: none; cursor: pointer;
+}
+.s-tab.act { background: var(--white); color: var(--pine); }
+
+.s-course-sel { display: flex; gap: 8px; padding: 12px 14px; }
+.s-cbtn {
+  flex: 1; padding: 8px; text-align: center; font-size: 13px; font-weight: 600;
+  border-radius: 8px; border: 1.5px solid var(--sand-dark); background: var(--white);
+  color: var(--ink3); cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.s-cbtn.act { border-color: var(--pine); background: var(--mint-bg); color: var(--pine); }
+.s-cbtn .sc-day { font-size: 11px; font-weight: 400; color: var(--ink3); display: block; margin-top: 1px; }
+.s-cbtn.act .sc-day { color: var(--fairway); }
+
+.s-players { display: flex; gap: 6px; padding: 6px 14px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.s-players::-webkit-scrollbar { display: none; }
+.s-pbtn {
+  flex-shrink: 0; padding: 5px 12px; font-size: 12px; font-weight: 600;
+  border-radius: 20px; border: 1.5px solid var(--sand-dark); background: var(--white);
+  color: var(--ink3); cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.s-pbtn.act { background: var(--pine); color: var(--white); border-color: var(--pine); }
+
+.s-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 0 14px 10px; }
+.s-stat { background: var(--sand); border-radius: 8px; padding: 8px 10px; }
+.s-stat-l { font-size: 10px; color: var(--ink3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.s-stat-v { font-size: 20px; font-weight: 700; margin-top: 1px; color: var(--ink); }
+.s-stat-v.pts { color: var(--pine); }
+
+.s-nine-label { padding: 8px 14px 4px; font-size: 11px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; }
+
+.s-hole-row { display: flex; align-items: center; padding: 7px 14px; border-bottom: 1px solid var(--sand); }
+.s-hole-info { width: 36px; }
+.s-hole-num { font-size: 14px; font-weight: 700; color: var(--ink); }
+.s-hole-par { font-size: 10px; color: var(--ink3); }
+.s-hole-mid { flex: 1; display: flex; align-items: center; gap: 6px; padding: 0 8px; }
+.s-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pine); }
+.s-score-wrap { display: flex; align-items: center; }
+.s-score-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--sand-dark); background: var(--white);
+  font-size: 16px; font-weight: 500; color: var(--ink3);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.s-score-btn:active { background: var(--sand); transform: scale(0.95); }
+.s-score-val { width: 38px; text-align: center; font-size: 18px; font-weight: 700; color: var(--ink); }
+.s-score-val.empty { color: var(--sand-dark); font-weight: 400; }
+.s-pts {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+}
+.sp-null { background: var(--sand); color: var(--sand-dark); }
+.sp-0 { background: #FCEBEB; color: var(--red); }
+.sp-1 { background: #FFF3E0; color: var(--amber); }
+.sp-2 { background: var(--sand); color: var(--ink2); }
+.sp-3 { background: var(--mint-bg); color: var(--fairway); }
+.sp-4 { background: #C8E6D5; color: var(--pine); }
+.sp-5 { background: var(--mint); color: var(--pine); }
+
+.s-nine-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 14px; margin: 0 14px 6px; background: var(--sand); border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--ink3);
+}
+.s-nine-total .snt-pts { font-size: 15px; font-weight: 700; color: var(--pine); }
+
+.s-total-bar {
+  margin: 6px 14px 14px; padding: 12px 14px; background: var(--pine); border-radius: 10px;
+  display: flex; justify-content: space-between; align-items: center; color: var(--white);
+}
+.s-total-bar .stl { font-size: 12px; color: var(--mint); }
+.s-total-bar .stv { font-size: 22px; font-weight: 700; }
+
+.s-lb-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--sand); }
+.s-lb-rank { width: 24px; font-size: 14px; font-weight: 700; color: var(--ink3); }
+.s-lb-rank.top { color: var(--pine); }
+.s-lb-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--ink); }
+.s-lb-hdcp { font-size: 11px; color: var(--ink3); font-weight: 400; margin-left: 4px; }
+.s-lb-pts { font-size: 18px; font-weight: 700; color: var(--pine); min-width: 32px; text-align: right; }
+.s-lb-thru { font-size: 11px; color: var(--ink3); min-width: 44px; text-align: right; margin-left: 6px; }
+
+.s-skin-header { padding: 10px 14px; font-size: 12px; color: var(--ink3); border-bottom: 1px solid var(--sand); }
+.s-skin-row { display: flex; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--sand); font-size: 13px; }
+.s-sk-hole { width: 48px; font-weight: 600; color: var(--ink3); }
+.s-sk-winner { flex: 1; font-weight: 600; }
+.s-sk-winner.won { color: var(--fairway); }
+.s-sk-winner.carry { color: var(--amber); font-weight: 500; }
+.s-sk-winner.none { color: var(--sand-dark); }
+.s-sk-val { min-width: 52px; text-align: right; font-weight: 700; }
+.s-sk-val.won { color: var(--fairway); }
+
+.s-payout { margin: 12px 14px; padding: 12px 14px; background: var(--mint-bg); border-radius: 10px; }
+.s-payout-title { font-size: 11px; font-weight: 700; color: var(--fairway); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.s-payout-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; }
+.s-payout-name { font-weight: 600; color: var(--ink); }
+.s-payout-amt { font-weight: 700; color: var(--fairway); }
+
+.s-reset-wrap { padding: 16px 14px; text-align: center; }
+.s-reset-btn {
+  padding: 8px 20px; font-size: 12px; font-weight: 600; border-radius: 8px;
+  border: 1.5px solid var(--red); background: var(--white); color: var(--red);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.s-reset-btn:active { background: #FCEBEB; }
+
+.sat-gen-wrap {
+  padding: 14px;
+  background: var(--mint-bg);
+  border-radius: 12px;
+}
+.sat-gen-title { font-size: 13px; font-weight: 700; color: var(--pine); margin-bottom: 4px; }
+.sat-gen-sub { font-size: 12px; color: var(--fairway); margin-bottom: 10px; line-height: 1.5; }
+.sat-gen-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background: var(--pine);
+  color: var(--white);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  margin-right: 8px;
+}
+.sat-gen-btn:active { opacity: 0.85; transform: scale(0.98); }
+.sat-shuffle-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1.5px solid var(--pine);
+  background: var(--white);
+  color: var(--pine);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.sat-shuffle-btn:active { background: var(--mint-bg); }
+.sat-rank-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--sand);
+}
+.sat-rank-row:last-child { border-bottom: none; }
+.sat-rank-pos { width: 24px; font-weight: 700; color: var(--ink3); }
+.sat-rank-name { flex: 1; font-weight: 600; color: var(--ink); }
+.sat-rank-pts { font-weight: 700; color: var(--pine); min-width: 32px; text-align: right; }
+.sat-rank-grp { font-size: 11px; color: var(--bark); min-width: 52px; text-align: right; margin-left: 8px; }
+.sat-no-scores { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+
+.footer {
+  text-align: center;
+  padding: 32px 24px;
+  font-size: 11px;
+  color: var(--ink3);
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Mooresville, NC</div>
+  <h1>Billchelor Weekend</h1>
+  <div class="hero-sub">Thursday - Saturday</div>
+  <div class="hero-addr">849 Kemp Road, Mooresville, NC 28117</div>
+</div>
+
+<nav id="mainNav">
+  <button class="act" data-page="itinerary">Itinerary</button>
+  <button data-page="players">Players</button>
+  <button data-page="menu">Menu</button>
+  <button data-page="rules">Stableford</button>
+  <button data-page="bets">Bets</button>
+  <button data-page="scorer">Scorer</button>
+</nav>
+
+<!-- ITINERARY -->
+<div class="page vis" id="pg-itinerary">
+
+  <div class="day-banner"><span class="day-name">Thursday</span><span class="day-desc">Arrivals</span></div>
+
+  <div class="event">
+    <div class="ev-time">10:20a</div>
+    <div class="ev-body">
+      <div class="ev-title">Jack, Alex, Jason, PJ</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">11:00a</div>
+    <div class="ev-body">
+      <div class="ev-title">Andrew, Bill</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">12:15p</div>
+    <div class="ev-body">
+      <div class="ev-title">Sheehan</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">2:30p</div>
+    <div class="ev-body">
+      <div class="ev-title">Jake</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">10:00p</div>
+    <div class="ev-body">
+      <div class="ev-title">Cole</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time"></div>
+    <div class="ev-body">
+      <div class="ev-sub" style="color:var(--ink3);">Ryan arrives Tuesday (already there)</div>
+    </div>
+  </div>
+
+  <div class="day-banner"><span class="day-name">Friday</span><span class="day-desc">Verdict Ridge</span></div>
+
+  <div class="section-card" style="margin:0 16px 12px;">
+    <div class="sc-header">Verdict Ridge Golf &amp; Country Club</div>
+    <div class="sc-body">
+      <div style="font-size:14px;color:var(--ink);font-weight:600;margin-bottom:2px;">Par 72</div>
+      <div style="font-size:13px;color:var(--ink3);">7332 Kidville Rd, Denver, NC 28037</div>
+      <div style="font-size:13px;color:var(--ink3);">704.489.1206 &middot; verdictridge.com</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">10:00a</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 1</div>
+      <div class="ev-sub">Cole, PJ, Ryan</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">10:10a</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 2</div>
+      <div class="ev-sub">Alex, Jason, Jake</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">10:20a</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 3</div>
+      <div class="ev-sub">Andrew, Bill, Jack, Sheehan</div>
+    </div>
+  </div>
+
+  <div class="day-banner"><span class="day-name">Saturday</span><span class="day-desc">Birkdale</span></div>
+
+  <div class="section-card" style="margin:0 16px 12px;">
+    <div class="sc-header">Birkdale Golf Club</div>
+    <div class="sc-body">
+      <div style="font-size:14px;color:var(--ink);font-weight:600;margin-bottom:2px;">Par 71</div>
+      <div style="font-size:13px;color:var(--ink3);">Huntersville, NC</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">1:00p</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 1</div>
+      <div class="ev-sub" id="sat-g1">TBD</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">1:10p</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 2</div>
+      <div class="ev-sub" id="sat-g2">TBD</div>
+    </div>
+  </div>
+
+  <div class="event">
+    <div class="ev-time">1:20p</div>
+    <div class="ev-body">
+      <div class="ev-title">Group 3</div>
+      <div class="ev-sub" id="sat-g3">TBD</div>
+    </div>
+  </div>
+
+  <div id="sat-grouping-controls" style="padding:12px 16px;">
+  </div>
+
+</div>
+
+<!-- PLAYERS -->
+<div class="page" id="pg-players">
+  <div class="section-card">
+    <div class="sc-header">Handicaps</div>
+    <div class="sc-body" id="hdcpList"></div>
+  </div>
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Thursday arrivals</div>
+    <div class="sc-body">
+      <div class="arrival-row"><span class="ar-names">Ryan</span><span class="ar-time">Tuesday</span></div>
+      <div class="arrival-row"><span class="ar-names">Jack, Alex, Jason, PJ</span><span class="ar-time">10:20 AM</span></div>
+      <div class="arrival-row"><span class="ar-names">Andrew, Bill</span><span class="ar-time">11:00 AM</span></div>
+      <div class="arrival-row"><span class="ar-names">Sheehan</span><span class="ar-time">12:15 PM</span></div>
+      <div class="arrival-row"><span class="ar-names">Jake</span><span class="ar-time">2:30 PM</span></div>
+      <div class="arrival-row"><span class="ar-names">Cole</span><span class="ar-time">10:00 PM</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="page" id="pg-menu">
+  <div class="section-card">
+    <div class="sc-header">Meals</div>
+    <div>
+      <div class="menu-meal"><div class="mm-when">Thursday dinner</div><div class="mm-items">Order pizza</div></div>
+      <div class="menu-meal"><div class="mm-when">Friday breakfast</div><div class="mm-items">Bacon, scrambled eggs, toast</div></div>
+      <div class="menu-meal"><div class="mm-when">Friday lunch</div><div class="mm-items">Golf course lunch</div></div>
+      <div class="menu-meal"><div class="mm-when">Friday dinner</div><div class="mm-items">Chicken fajitas, rice &amp; beans, garden salad, chips, salsa, guac &amp; queso</div></div>
+      <div class="menu-meal"><div class="mm-when">Saturday breakfast</div><div class="mm-items">Breakfast sausage, scrambled eggs, biscuits</div></div>
+      <div class="menu-meal"><div class="mm-when">Saturday lunch</div><div class="mm-items">Golf course lunch</div></div>
+      <div class="menu-meal"><div class="mm-when">Saturday dinner</div><div class="mm-items">Steaks, mashed potatoes, grilled asparagus, Caesar salad</div></div>
+    </div>
+  </div>
+
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Snacks &amp; apps</div>
+    <div class="sc-body">Hamburgers &amp; hot dogs, chicken tenders (late night), deli meat &amp; cheese, Uncrustables, cheese, crackers &amp; pepperoni, potato chips, Chex Mix, granola bars, watermelon, grapes, bananas, clementines, assorted yogurts, ice cream sandwiches</div>
+  </div>
+
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Drinks (non-alcoholic)</div>
+    <div class="sc-body">Gatorade, Celsius, Liquid IV, coffee, bottled water, ginger ale, seltzer</div>
+  </div>
+
+</div>
+
+<!-- STABLEFORD RULES -->
+<div class="page" id="pg-rules">
+  <div class="section-card">
+    <div class="sc-header">How Stableford works</div>
+    <div class="sc-body">
+      <p style="margin-bottom:12px;">Modified Stableford rewards good holes without letting blow-ups ruin your round. Each player gets their full course handicap in strokes, distributed by hole handicap index.</p>
+      <p style="margin-bottom:12px;">Score each hole relative to your net par:</p>
+      <div class="rules-row"><span class="rules-num">0</span><span>Double bogey or worse (pick up and move on)</span></div>
+      <div class="rules-row"><span class="rules-num">1</span><span>Net bogey</span></div>
+      <div class="rules-row"><span class="rules-num">2</span><span>Net par</span></div>
+      <div class="rules-row"><span class="rules-num">3</span><span>Net birdie</span></div>
+      <div class="rules-row"><span class="rules-num">4</span><span>Net eagle</span></div>
+      <div class="rules-row"><span class="rules-num">5</span><span>Net albatross</span></div>
+      <p style="margin-top:12px;">Highest point total wins. The green dots on the scorecard show where you get strokes.</p>
+    </div>
+  </div>
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Why Stableford</div>
+    <div class="sc-body">
+      <p>Your handicap range is 4.5 to 23, almost a 19-shot spread. In stroke play, the higher handicaps can blow up on a couple holes and they're mentally out by the turn. Stableford caps the damage. You pick up and move on, pace of play stays solid, and everyone's in it until the end.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BETS -->
+<div class="page" id="pg-bets">
+  <div class="section-card">
+    <div class="sc-header">Betting structure</div>
+    <div class="sc-body">
+      <div class="bet-card">
+        <div class="bet-label">Layer 1: Main pot</div>
+        <div class="bet-desc">Highest Stableford points on the day takes the pot. Split 60/30/10 across top three.</div>
+        <div class="bet-amount">$20 per player</div>
+      </div>
+      <div class="bet-card">
+        <div class="bet-label">Layer 2: Skins</div>
+        <div class="bet-desc">$2/hole per player. Highest net Stableford points on each hole wins the skin. Ties carry over.</div>
+        <div class="bet-amount">$20 per player ($2 x 10 players = $20/hole)</div>
+      </div>
+      <div class="bet-card">
+        <div class="bet-label">Layer 3: Side bets</div>
+        <div class="bet-desc">Closest to the pin on par 3s. Longest drive on a designated par 5. "Worst to first" bonus if the highest handicap in any group beats the lowest.</div>
+        <div class="bet-amount">$5 buy-in each</div>
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--mint-bg);border-radius:10px;">
+        <div style="font-size:13px;font-weight:700;color:var(--pine);">Total per person: ~$50</div>
+        <div style="font-size:12px;color:var(--fairway);margin-top:2px;">$500 total in play. Enough to care, not enough to ruin the weekend.</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Saturday groupings</div>
+    <div class="sc-body">
+      <p>Lowest net Stableford score on Friday gets first captain pick. Second lowest gets second captain, third lowest gets third. Captains snake-draft the remaining 7 guys Friday night.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SCORER -->
+<div class="page" id="pg-scorer">
+  <div class="scorer-section">
+    <div class="scorer-app" id="scorerApp"></div>
+  </div>
+</div>
+
+<div class="footer">Billchelor Weekend 2026</div>
+
+<script>
+var COURSES = {
+  verdict: {
+    name: 'Verdict Ridge', day: 'Friday', par: 72,
+    holes: [
+      {num:1,par:4,hdcp:5},{num:2,par:3,hdcp:9},{num:3,par:5,hdcp:13},{num:4,par:4,hdcp:1},
+      {num:5,par:4,hdcp:15},{num:6,par:5,hdcp:7},{num:7,par:4,hdcp:3},{num:8,par:3,hdcp:11},
+      {num:9,par:4,hdcp:17},
+      {num:10,par:4,hdcp:12},{num:11,par:3,hdcp:14},{num:12,par:4,hdcp:6},{num:13,par:3,hdcp:18},
+      {num:14,par:4,hdcp:10},{num:15,par:4,hdcp:4},{num:16,par:4,hdcp:16},{num:17,par:5,hdcp:8},
+      {num:18,par:5,hdcp:2}
+    ]
+  },
+  birkdale: {
+    name: 'Birkdale', day: 'Saturday', par: 71,
+    holes: [
+      {num:1,par:4,hdcp:11},{num:2,par:3,hdcp:17},{num:3,par:4,hdcp:3},{num:4,par:4,hdcp:13},
+      {num:5,par:5,hdcp:1},{num:6,par:3,hdcp:9},{num:7,par:4,hdcp:15},{num:8,par:5,hdcp:5},
+      {num:9,par:3,hdcp:7},
+      {num:10,par:4,hdcp:18},{num:11,par:4,hdcp:4},{num:12,par:3,hdcp:16},{num:13,par:5,hdcp:2},
+      {num:14,par:4,hdcp:8},{num:15,par:4,hdcp:12},{num:16,par:3,hdcp:14},{num:17,par:5,hdcp:10},
+      {num:18,par:4,hdcp:6}
+    ]
+  }
+};
+
+var PLAYERS = [
+  {name:'Jack',hdcp:4.5},{name:'Alex',hdcp:5},{name:'Jason',hdcp:8.9},
+  {name:'Sheehan',hdcp:13.1},{name:'Andrew',hdcp:15.1},{name:'Bill',hdcp:16.6},
+  {name:'Cole',hdcp:18.6},{name:'Ryan',hdcp:22.2},{name:'PJ',hdcp:22.9},{name:'Jake',hdcp:23}
+];
+
+var ss = { view:'scorecard', course:'verdict', player:'Jack', scores:{} };
+PLAYERS.forEach(function(p){ ss.scores[p.name]={verdict:new Array(18).fill(null),birkdale:new Array(18).fill(null)}; });
+
+function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:2,c:ss.course,p:ss.player,d:d});}catch(e){}}
+function loadS(){try{if(!window.name)return;var o=JSON.parse(window.name);if(!o.ver||o.ver<2){window.name='';return;}if(o.c)ss.course=o.c;if(o.p)ss.player=o.p;if(o.d)PLAYERS.forEach(function(p){if(o.d[p.name]){ss.scores[p.name].verdict=o.d[p.name].v||new Array(18).fill(null);ss.scores[p.name].birkdale=o.d[p.name].b||new Array(18).fill(null);}});}catch(e){window.name='';}}
+
+function getStrokes(h,hh){var f=Math.floor(h),s=0;if(hh<=f)s++;if(h>18&&hh<=(f-18))s++;return s;}
+function stPts(g,p,s){if(g===null)return null;var d=g-s-p;if(d<=-3)return 5;if(d===-2)return 4;if(d===-1)return 3;if(d===0)return 2;if(d===1)return 1;return 0;}
+function pStats(n,ck){var p=PLAYERS.find(function(x){return x.name===n;}),c=COURSES[ck],t=0,th=0,gr=0;for(var i=0;i<18;i++){var g=ss.scores[n][ck][i];if(g!==null){var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts!==null){t+=pts;th=i+1;gr+=g;}}}return{total:t,thru:th,gross:gr};}
+function getSkins(ck){var c=COURSES[ck],r=[],co=0,sv=2*PLAYERS.length;for(var i=0;i<18;i++){var best=-1,bn='',tie=false,any=false;PLAYERS.forEach(function(p){var g=ss.scores[p.name][ck][i];if(g!==null){any=true;var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts>best){best=pts;bn=p.name;tie=false;}else if(pts===best)tie=true;}});if(!any)r.push({hole:i+1,winner:null,value:0,carry:co,noData:true});else if(tie||best<=0){co+=sv;r.push({hole:i+1,winner:null,value:0,carry:co,noData:false});}else{var w=sv+co;r.push({hole:i+1,winner:bn,value:w,carry:0,noData:false});co=0;}}return r;}
+
+function renderScorer(){
+  var p=PLAYERS.find(function(x){return x.name===ss.player;}),c=COURSES[ss.course],st=pStats(ss.player,ss.course);
+  var h='';
+  h+='<div class="s-tabs">';
+  ['scorecard','leaderboard','skins'].forEach(function(v){var l=v==='scorecard'?'Scorecard':v==='leaderboard'?'Leaderboard':'Skins';h+='<button class="s-tab'+(ss.view===v?' act':'')+'" data-sv="'+v+'">'+l+'</button>';});
+  h+='</div>';
+  h+='<div class="s-course-sel">';
+  ['verdict','birkdale'].forEach(function(ck){var cc=COURSES[ck];h+='<button class="s-cbtn'+(ss.course===ck?' act':'')+'" data-sc="'+ck+'">'+cc.name+'<span class="sc-day">'+cc.day+' - Par '+cc.par+'</span></button>';});
+  h+='</div>';
+
+  if(ss.view==='scorecard'){
+    h+='<div class="s-players">';
+    PLAYERS.forEach(function(pl){h+='<button class="s-pbtn'+(ss.player===pl.name?' act':'')+'" data-sp="'+pl.name+'">'+pl.name+'</button>';});
+    h+='</div>';
+    h+='<div class="s-stats"><div class="s-stat"><div class="s-stat-l">Hdcp</div><div class="s-stat-v">'+p.hdcp.toFixed(1)+'</div></div><div class="s-stat"><div class="s-stat-l">Points</div><div class="s-stat-v pts">'+st.total+'</div></div><div class="s-stat"><div class="s-stat-l">Thru</div><div class="s-stat-v">'+st.thru+'</div></div></div>';
+
+    function rNine(s,e,label){
+      h+='<div class="s-nine-label">'+label+'</div>';
+      var pt=0,ptt=0;
+      for(var i=s;i<e;i++){
+        var ho=c.holes[i],sk=getStrokes(p.hdcp,ho.hdcp),g=ss.scores[ss.player][ss.course][i],pts=g!==null?stPts(g,ho.par,sk):null;
+        pt+=ho.par;if(pts!==null)ptt+=pts;
+        h+='<div class="s-hole-row"><div class="s-hole-info"><div class="s-hole-num">'+ho.num+'</div><div class="s-hole-par">Par '+ho.par+'</div></div><div class="s-hole-mid"><div class="s-dot" style="'+(sk>0?'':'opacity:0')+'"></div>'+(sk>1?'<div class="s-dot"></div>':'')+'</div><div class="s-score-wrap"><button class="s-score-btn" data-sh="'+i+'" data-sd="-1">&minus;</button><div class="s-score-val'+(g===null?' empty':'')+'" id="ssv'+i+'">'+(g!==null?g:'&ndash;')+'</div><button class="s-score-btn" data-sh="'+i+'" data-sd="1">+</button></div><div class="s-pts sp-'+(pts!==null?Math.min(pts,5):'null')+'">'+(pts!==null?pts:'&ndash;')+'</div></div>';
+      }
+      h+='<div class="s-nine-total"><span>'+label+' &middot; Par '+pt+'</span><span class="snt-pts">'+ptt+' pts</span></div>';
+    }
+    rNine(0,9,'Front 9');rNine(9,18,'Back 9');
+    h+='<div class="s-total-bar"><div><div class="stl">Total &middot; Par '+c.par+(st.thru>0?' &middot; Gross '+st.gross:'')+'</div></div><div class="stv">'+st.total+' pts</div></div>';
+    h+='<div class="s-reset-wrap"><button class="s-reset-btn" id="sResetBtn">Reset '+ss.player+'\'s scores</button></div>';
+
+  } else if(ss.view==='leaderboard'){
+    var lb=PLAYERS.map(function(pl){var s2=pStats(pl.name,ss.course);return{name:pl.name,hdcp:pl.hdcp,total:s2.total,thru:s2.thru};}).sort(function(a,b){return b.total-a.total||a.hdcp-b.hdcp;});
+    var lp=-1,lr=0;
+    lb.forEach(function(pl,i){var rk;if(pl.total!==lp){rk=i+1;lr=rk;}else rk=lr;lp=pl.total;
+      h+='<div class="s-lb-row"><div class="s-lb-rank'+(rk<=3&&pl.thru>0?' top':'')+'">'+rk+'</div><div class="s-lb-name">'+pl.name+'<span class="s-lb-hdcp">'+pl.hdcp.toFixed(1)+'</span></div><div class="s-lb-pts">'+pl.total+'</div><div class="s-lb-thru">'+(pl.thru>0?'thru '+pl.thru:'&ndash;')+'</div></div>';
+    });
+
+  } else {
+    var sv=2*PLAYERS.length;
+    h+='<div class="s-skin-header">$'+sv+'/hole ($2 x '+PLAYERS.length+'). Ties carry.</div>';
+    var skins=getSkins(ss.course);
+    skins.forEach(function(s2){
+      h+='<div class="s-skin-row"><div class="s-sk-hole">Hole '+s2.hole+'</div>';
+      if(s2.winner)h+='<div class="s-sk-winner won">'+s2.winner+'</div><div class="s-sk-val won">+$'+s2.value+'</div>';
+      else if(s2.noData)h+='<div class="s-sk-winner none">No scores</div><div class="s-sk-val">&ndash;</div>';
+      else h+='<div class="s-sk-winner carry">Carry'+(s2.carry>0?' ($'+s2.carry+')':'')+'</div><div class="s-sk-val">&ndash;</div>';
+      h+='</div>';
+    });
+    var wi={};PLAYERS.forEach(function(pl){wi[pl.name]=0;});skins.forEach(function(s2){if(s2.winner)wi[s2.winner]+=s2.value;});
+    var tp=0;Object.keys(wi).forEach(function(k){tp+=wi[k];});
+    if(tp>0){
+      h+='<div class="s-payout"><div class="s-payout-title">Skins payouts</div>';
+      Object.entries(wi).filter(function(e){return e[1]>0;}).sort(function(a,b){return b[1]-a[1];}).forEach(function(e){var net=e[1]-36;h+='<div class="s-payout-row"><span class="s-payout-name">'+e[0]+'</span><span class="s-payout-amt">$'+e[1]+' (net '+(net>=0?'+':'')+' $'+net+')</span></div>';});
+      h+='</div>';
+    }
+  }
+  document.getElementById('scorerApp').innerHTML=h;
+  bindScorer();
+}
+
+function bindScorer(){
+  document.querySelectorAll('.s-tab').forEach(function(b){b.addEventListener('click',function(){ss.view=b.dataset.sv;renderScorer();});});
+  document.querySelectorAll('[data-sc]').forEach(function(b){b.addEventListener('click',function(){ss.course=b.dataset.sc;renderScorer();});});
+  document.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){ss.player=b.dataset.sp;renderScorer();});});
+  document.querySelectorAll('.s-score-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var hi=parseInt(b.dataset.sh),dir=parseInt(b.dataset.sd),cur=ss.scores[ss.player][ss.course][hi],par=COURSES[ss.course].holes[hi].par;
+      if(cur===null)cur=par;else cur=cur+dir;
+      if(cur<1)cur=null;if(cur!==null&&cur>12)cur=12;
+      ss.scores[ss.player][ss.course][hi]=cur;
+      saveS();renderScorer();
+      if(ss.course==='verdict' && satGroups) { satGroups=null; renderSaturdayGroups(); }
+    });
+  });
+  var rb=document.getElementById('sResetBtn');
+  if(rb)rb.addEventListener('click',function(){if(confirm('Reset '+ss.player+'\'s scores on '+COURSES[ss.course].name+'?')){ss.scores[ss.player][ss.course]=new Array(18).fill(null);saveS();renderScorer();}});
+}
+
+// Nav
+document.querySelectorAll('#mainNav button').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#mainNav button').forEach(function(b){b.classList.remove('act');});
+    btn.classList.add('act');
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('vis');});
+    document.getElementById('pg-'+btn.dataset.page).classList.add('vis');
+    if(btn.dataset.page==='scorer')renderScorer();
+    window.scrollTo(0,0);
+  });
+});
+
+// Saturday auto-grouping based on Friday Stableford scores
+var satGroups = null; // persisted in window.name via saveS/loadS
+
+function getFridayRanking() {
+  var ranked = PLAYERS.map(function(p) {
+    var s = pStats(p.name, 'verdict');
+    return { name: p.name, total: s.total, thru: s.thru };
+  });
+  ranked.sort(function(a, b) { return b.total - a.total || a.name.localeCompare(b.name); });
+  return ranked;
+}
+
+function hasFridayScores() {
+  var count = 0;
+  PLAYERS.forEach(function(p) {
+    for (var i = 0; i < 18; i++) {
+      if (ss.scores[p.name].verdict[i] !== null) { count++; return; }
+    }
+  });
+  return count >= 2;
+}
+
+// Balanced distribution: sort 1-10 by Friday pts, deal into 3 groups
+// Pattern: 1->G1, 2->G2, 3->G3, 4->G3, 5->G2, 6->G1, 7->G1, 8->G2, 9->G3, 10->G3
+// This gives groups of 4-3-3 with balanced point totals
+function autoBalanceGroups() {
+  var ranked = getFridayRanking();
+  var g1 = [], g2 = [], g3 = [];
+  var pattern = [g1, g2, g3, g3, g2, g1, g1, g2, g3, g3];
+  ranked.forEach(function(p, i) {
+    pattern[i].push(p.name);
+  });
+  return [g1, g2, g3];
+}
+
+function shuffleGroups() {
+  var ranked = getFridayRanking();
+  // Keep top/middle/bottom tiers but randomize within tiers
+  var top = ranked.slice(0, 3);
+  var mid = ranked.slice(3, 7);
+  var bot = ranked.slice(7, 10);
+  // Shuffle each tier
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  shuffle(top); shuffle(mid); shuffle(bot);
+  // Deal: one from each tier per group, then distribute remaining mid players
+  var g1 = [top[0].name, mid[0].name, bot[0].name, mid[3].name];
+  var g2 = [top[1].name, mid[1].name, bot[1].name];
+  var g3 = [top[2].name, mid[2].name, bot[2].name];
+  return [g1, g2, g3];
+}
+
+function renderSaturdayGroups() {
+  var el = document.getElementById('sat-grouping-controls');
+  var g1el = document.getElementById('sat-g1');
+  var g2el = document.getElementById('sat-g2');
+  var g3el = document.getElementById('sat-g3');
+  if (!el) return;
+
+  if (!hasFridayScores()) {
+    g1el.textContent = 'TBD';
+    g2el.textContent = 'TBD';
+    g3el.textContent = 'TBD';
+    el.innerHTML = '<div class="sat-gen-wrap"><div class="sat-gen-title">Saturday groups</div><div class="sat-no-scores">Enter Friday scores in the Scorer tab. Groups will auto-generate based on Stableford results, balancing each group with a mix of top, middle, and bottom finishers.</div></div>';
+    return;
+  }
+
+  var ranked = getFridayRanking();
+
+  if (!satGroups) {
+    satGroups = autoBalanceGroups();
+  }
+
+  g1el.textContent = satGroups[0].join(', ');
+  g2el.textContent = satGroups[1].join(', ');
+  g3el.textContent = satGroups[2].join(', ');
+
+  var h = '<div class="sat-gen-wrap">';
+  h += '<div class="sat-gen-title">Friday results &rarr; Saturday groups</div>';
+  h += '<div class="sat-gen-sub">Sorted by Friday Stableford points, then dealt into balanced groups so each has a mix of top, middle, and bottom finishers.</div>';
+
+  ranked.forEach(function(p, i) {
+    var grpNum = '-';
+    for (var g = 0; g < 3; g++) {
+      if (satGroups[g].indexOf(p.name) !== -1) { grpNum = 'Group ' + (g + 1); break; }
+    }
+    h += '<div class="sat-rank-row">';
+    h += '<div class="sat-rank-pos">' + (i + 1) + '</div>';
+    h += '<div class="sat-rank-name">' + p.name + '</div>';
+    h += '<div class="sat-rank-pts">' + p.total + ' pts</div>';
+    h += '<div class="sat-rank-grp">' + grpNum + '</div>';
+    h += '</div>';
+  });
+
+  h += '<div style="margin-top:12px;">';
+  h += '<button class="sat-gen-btn" id="satRegenBtn">Rebalance</button>';
+  h += '<button class="sat-shuffle-btn" id="satShuffleBtn">Shuffle</button>';
+  h += '</div>';
+  h += '</div>';
+
+  el.innerHTML = h;
+
+  document.getElementById('satRegenBtn').addEventListener('click', function() {
+    satGroups = autoBalanceGroups();
+    renderSaturdayGroups();
+  });
+  document.getElementById('satShuffleBtn').addEventListener('click', function() {
+    satGroups = shuffleGroups();
+    renderSaturdayGroups();
+  });
+}
+
+// Hook into nav so Saturday groups render when itinerary is shown
+var origNavHandler = true;
+document.querySelectorAll('#mainNav button').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    if(btn.dataset.page==='itinerary') renderSaturdayGroups();
+  });
+});
+
+// Handicap list
+var hdcpHtml='';
+PLAYERS.forEach(function(p){hdcpHtml+='<div class="hdcp-row"><span class="hdcp-name">'+p.name+'</span><span class="hdcp-val">'+p.hdcp.toFixed(1)+'</span></div>';});
+document.getElementById('hdcpList').innerHTML=hdcpHtml;
+
+loadS();
+renderSaturdayGroups();
+</script>
+</body>
+</html>
