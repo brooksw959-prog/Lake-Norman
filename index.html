@@ -460,8 +460,8 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 <div class="hero">
   <div class="hero-eyebrow">Mooresville, NC</div>
   <h1>Billchelor Weekend</h1>
-  <div class="hero-sub">Thursday - Saturday</div>
-  <div class="hero-addr">849 Kemp Road, Mooresville, NC 28117</div>
+  <div class="hero-sub">AirBnB: <a href="https://www.google.com/maps/search/?api=1&query=849+Kemp+Road+Mooresville+NC+28117" style="color:var(--mint);text-decoration:underline;">849 Kemp Road, Mooresville, NC 28117</a></div>
+  <div class="hero-addr">Check-in 4pm &middot; Checkout 10am</div>
 </div>
 
 <nav id="mainNav">
@@ -470,6 +470,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   <button data-page="players">Handicaps</button>
   <button data-page="gambling">Gambling</button>
   <button data-page="scorer">Scorecard</button>
+  <button data-page="photos">Photos</button>
 </nav>
 
 <!-- ITINERARY -->
@@ -528,6 +529,15 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     </div>
   </div>
 
+  <div class="section-card" style="margin:0 16px 12px;">
+    <div class="sc-header">AirBnB</div>
+    <div class="sc-body">
+      <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;">849 Kemp Road, Mooresville, NC 28117</div>
+      <div style="font-size:13px;color:var(--ink3);">Check-in: 4:00 PM &middot; Checkout: 10:00 AM Sunday</div>
+      <div style="margin-top:6px;"><a href="https://www.airbnb.com/rooms/1206465950923163231?unique_share_id=9735845a-8f59-422a-aee2-ac80e2a699bf&viralityEntryPoint=1&s=76" style="font-size:13px;color:var(--fairway);font-weight:600;">View listing</a></div>
+    </div>
+  </div>
+
   <div class="day-banner"><span class="day-name">Friday</span></div>
 
   <div class="section-card" style="margin:0 16px 12px;">
@@ -548,7 +558,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   </div>
 
   <div class="event">
-    <div class="ev-time">10:10a</div>
+    <div class="ev-time">10:20a</div>
     <div class="ev-body">
       <div class="ev-title">Group 2</div>
       <div class="ev-sub">Alex, Jason, Jake</div>
@@ -556,7 +566,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   </div>
 
   <div class="event">
-    <div class="ev-time">10:20a</div>
+    <div class="ev-time">10:30a</div>
     <div class="ev-body">
       <div class="ev-title">Group 3</div>
       <div class="ev-sub">Andrew, Bill, Jack, Sheehan</div>
@@ -626,8 +636,16 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   </div>
 
   <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Drinks (non-alcoholic)</div>
-    <div class="sc-body">Gatorade, Celsius, Liquid IV, coffee, bottled water, ginger ale, seltzer</div>
+    <div class="sc-header">Snacks &amp; apps</div>
+    <div class="sc-body">Hamburgers &amp; hot dogs, chicken tenders, deli meat, Uncrustables, cheese, crackers &amp; pepperoni, potato chips, Chex Mix, granola bars, watermelon, grapes, bananas, clementines, assorted yogurts, ice cream sandwiches</div>
+  </div>
+
+  <div class="section-card" style="margin-top:12px;">
+    <div class="sc-header">Drinks</div>
+    <div class="sc-body">
+      <div style="margin-bottom:8px;">Gatorade, Celsius, Liquid IV, coffee, bottled water, ginger ale, seltzer</div>
+      <div style="font-size:13px;color:var(--bark);font-weight:600;">Please contact Jack Emmens with requests.</div>
+    </div>
   </div>
 
 </div>
@@ -668,7 +686,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     </div>
   </div>
   <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Saturday groupings (vote)</div>
+    <div class="sc-header">Saturday groupings</div>
     <div class="sc-body">
       <div class="bet-card">
         <div class="bet-label">Option A: Balanced</div>
@@ -686,6 +704,17 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 <div class="page" id="pg-scorer">
   <div class="scorer-section">
     <div class="scorer-app" id="scorerApp"></div>
+  </div>
+</div>
+
+<!-- PHOTOS -->
+<div class="page" id="pg-photos">
+  <div class="section-card">
+    <div class="sc-header">Photos &amp; videos</div>
+    <div class="sc-body" style="text-align:center;">
+      <p style="margin-bottom:14px;">Upload your photos and videos to the shared Google Drive folder. Everyone can see them.</p>
+      <a href="https://drive.google.com/drive/u/0/folders/1x1O9bMeCmcCinibZ05GX8Vqcy5ooYQEK" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;border-radius:8px;background:var(--pine);color:var(--white);text-decoration:none;font-family:'DM Sans',sans-serif;">Open shared folder</a>
+    </div>
   </div>
 </div>
 
