@@ -467,9 +467,10 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 <nav id="mainNav">
   <button class="act" data-page="itinerary">Itinerary</button>
   <button data-page="menu">Menu</button>
-  <button data-page="players">Handicaps</button>
+  <button data-page="handicaps">Handicaps</button>
   <button data-page="gambling">Gambling</button>
-  <button data-page="scorer">Scorecard</button>
+  <button data-page="scorer">Leaderboard</button>
+  <button data-page="stats">Stats</button>
   <button data-page="photos">Photos</button>
 </nav>
 
@@ -535,7 +536,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     <div class="sc-header">Verdict Ridge Golf &amp; Country Club</div>
     <div class="sc-body">
       <div style="font-size:14px;color:var(--ink);font-weight:600;margin-bottom:2px;">Par 72</div>
-      <div style="font-size:13px;color:var(--ink3);">7332 Kidville Rd, Denver, NC 28037</div>
+      <div style="font-size:13px;"><a href="https://www.google.com/maps/search/?api=1&query=7332+Kidville+Rd+Denver+NC+28037" style="color:var(--fairway);text-decoration:underline;">7332 Kidville Rd, Denver, NC 28037</a></div>
       <div style="font-size:13px;color:var(--ink3);">704.489.1206 &middot; verdictridge.com</div>
     </div>
   </div>
@@ -570,7 +571,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     <div class="sc-header">Birkdale Golf Club</div>
     <div class="sc-body">
       <div style="font-size:14px;color:var(--ink);font-weight:600;margin-bottom:2px;">Par 71</div>
-      <div style="font-size:13px;color:var(--ink3);">Huntersville, NC</div>
+      <div style="font-size:13px;"><a href="https://www.google.com/maps/search/?api=1&query=Birkdale+Golf+Club+Huntersville+NC" style="color:var(--fairway);text-decoration:underline;">Huntersville, NC</a></div>
     </div>
   </div>
 
@@ -601,10 +602,16 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   <div id="sat-grouping-controls" style="padding:12px 16px;">
   </div>
 
+  <div class="section-card" style="margin:0 16px 12px;">
+    <div class="sc-body" style="font-size:13px;color:var(--ink3);">
+      Saturday groups tiered by Friday Stableford score. Bottom 4 go off first, middle 3 next, top 3 go off last.
+    </div>
+  </div>
+
 </div>
 
 <!-- PLAYERS -->
-<div class="page" id="pg-players">
+<div class="page" id="pg-handicaps">
   <div class="section-card">
     <div class="sc-header">Handicaps</div>
     <div class="sc-body" id="hdcpList"></div>
@@ -683,14 +690,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   <div class="section-card" style="margin-top:12px;">
     <div class="sc-header">Saturday groupings</div>
     <div class="sc-body">
-      <div class="bet-card">
-        <div class="bet-label">Option A: Balanced</div>
-        <div class="bet-desc">Groups are auto-balanced from Friday results. Each group gets a mix of top, middle, and bottom finishers so Saturday stays competitive across all three groups.</div>
-      </div>
-      <div class="bet-card">
-        <div class="bet-label">Option B: Tiered by score</div>
-        <div class="bet-desc">Groups are stacked by Friday finish. Bottom 4 go off first (1:00p), middle 3 next (1:10p), top 3 go off last (1:20p). Best players earn the latest tee time.</div>
-      </div>
+      <p>Tiered by Friday Stableford score. Bottom 4 go off first (1:00p), middle 3 next (1:10p), top 3 go off last (1:20p). Best players earn the latest tee time.</p>
     </div>
   </div>
 </div>
@@ -699,6 +699,13 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 <div class="page" id="pg-scorer">
   <div class="scorer-section">
     <div class="scorer-app" id="scorerApp"></div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="page" id="pg-stats">
+  <div class="scorer-section">
+    <div class="scorer-app" id="statsApp"></div>
   </div>
 </div>
 
@@ -759,11 +766,11 @@ var SATURDAY_GROUPS = [
   { name: 'Group 3', time: '1:20p', players: [] }
 ];
 
-var ss = { view:'scorecard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}} };
+var ss = { view:'leaderboard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}}, statsPlayer:null, openCard:null, votes:{} };
 PLAYERS.forEach(function(p){ ss.scores[p.name]={verdict:new Array(18).fill(null),birkdale:new Array(18).fill(null)}; });
 
-function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:3,c:ss.course,d:d,ctp:ss.ctp});}catch(e){}}
-function loadS(){try{if(!window.name)return;var o=JSON.parse(window.name);if(!o.ver||o.ver<3){window.name='';return;}if(o.c)ss.course=o.c;if(o.ctp)ss.ctp=o.ctp;if(o.d)PLAYERS.forEach(function(p){if(o.d[p.name]){ss.scores[p.name].verdict=o.d[p.name].v||new Array(18).fill(null);ss.scores[p.name].birkdale=o.d[p.name].b||new Array(18).fill(null);}});}catch(e){window.name='';}}
+function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:4,c:ss.course,d:d,ctp:ss.ctp,votes:ss.votes});}catch(e){}}
+function loadS(){try{if(!window.name)return;var o=JSON.parse(window.name);if(!o.ver||o.ver<4){window.name='';return;}if(o.c)ss.course=o.c;if(o.ctp)ss.ctp=o.ctp;if(o.votes)ss.votes=o.votes;if(o.d)PLAYERS.forEach(function(p){if(o.d[p.name]){ss.scores[p.name].verdict=o.d[p.name].v||new Array(18).fill(null);ss.scores[p.name].birkdale=o.d[p.name].b||new Array(18).fill(null);}});}catch(e){window.name='';}}
 
 function getStrokes(h,hh){var f=Math.floor(h),s=0;if(hh<=f)s++;if(h>18&&hh<=(f-18))s++;return s;}
 function stPts(g,p,s){if(g===null)return null;var d=g-s-p;if(d<=-3)return 5;if(d===-2)return 4;if(d===-1)return 3;if(d===0)return 2;if(d===1)return 1;return 0;}
@@ -825,6 +832,25 @@ function renderScorer(){
       h+='<span class="s-hole-meta">Par '+ho.par+' &middot; Hdcp '+ho.hdcp+'</span>';
       h+='</div>';
 
+      // CTP banner on par 3s
+      if(ho.par === 3) {
+        var ctpData = ss.ctp[ss.course][hi] || {leader:'',status:'open'};
+        var ctpBg = ctpData.status==='final'?'var(--mint-bg)':ctpData.status==='marked'?'#FFF3E0':'var(--sand)';
+        var ctpColor = ctpData.status==='final'?'var(--pine)':ctpData.status==='marked'?'var(--amber)':'var(--ink3)';
+        h+='<div style="margin:0 14px;padding:10px 12px;background:'+ctpBg+';border-radius:8px;display:flex;align-items:center;justify-content:space-between;">';
+        h+='<div style="font-size:13px;font-weight:600;color:'+ctpColor+';">';
+        if(ctpData.status==='final' && ctpData.leader) {
+          h+='CTP Winner: '+ctpData.leader;
+        } else if(ctpData.status==='marked' && ctpData.leader) {
+          h+='CTP Leader: '+ctpData.leader;
+        } else {
+          h+='CTP: Mark your closest shot';
+        }
+        h+='</div>';
+        h+='<div style="font-size:11px;font-weight:600;color:'+ctpColor+';text-transform:uppercase;">'+ctpData.status+'</div>';
+        h+='</div>';
+      }
+
       // Each player in the group
       grp.players.forEach(function(pname){
         var pl = PLAYERS.find(function(x){return x.name===pname;});
@@ -852,26 +878,98 @@ function renderScorer(){
       if(hi < 17) h+='<button class="s-hole-nav-btn primary" data-hn="'+(hi+1)+'">Hole '+c.holes[hi+1].num+' &rarr;</button>';
       h+='</div>';
 
-      // Group summary
-      h+='<div style="padding:10px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">'+grp.name+' standings</div>';
-      h+='<div class="s-grp-summary-row" style="font-size:11px;color:var(--ink3);font-weight:600;border-bottom:1px solid var(--sand-dark);">';
-      h+='<div class="s-grp-summary-name" style="color:var(--ink3);font-weight:600;">Player</div>';
-      h+='<div style="min-width:36px;text-align:right;">Gross</div>';
-      h+='<div style="min-width:36px;text-align:right;">Net</div>';
-      h+='<div class="s-grp-summary-pts" style="color:var(--ink3);">Pts</div>';
-      h+='<div class="s-grp-summary-thru">Thru</div>';
-      h+='</div>';
-      var gsorted = grp.players.map(function(pn){
-        var s2=pStats(pn,ss.course);
-        return {name:pn, total:s2.total, thru:s2.thru, gross:s2.gross, net:s2.net};
-      }).sort(function(a,b){ return b.total-a.total; });
-      gsorted.forEach(function(ps){
-        h+='<div class="s-grp-summary-row">';
-        h+='<div class="s-grp-summary-name">'+ps.name+'</div>';
-        h+='<div style="min-width:36px;text-align:right;font-size:13px;color:var(--ink2);">'+(ps.thru>0?ps.gross:'&ndash;')+'</div>';
-        h+='<div style="min-width:36px;text-align:right;font-size:13px;color:var(--ink2);">'+(ps.thru>0?ps.net:'&ndash;')+'</div>';
-        h+='<div class="s-grp-summary-pts">'+ps.total+'</div>';
-        h+='<div class="s-grp-summary-thru">'+(ps.thru>0?'thru '+ps.thru:'&ndash;')+'</div>';
+      // Player scorecards - expandable history
+      h+='<div style="padding:10px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">Scorecards</div>';
+      var scoreColorsH = {'-2':'#D4AF37','-1':'#1D9E75','0':'#3A7A5A','1':'#BA7517','2':'#D85A30','3':'#C0392B'};
+
+      grp.players.forEach(function(pname, pIdx){
+        var pl = PLAYERS.find(function(x){return x.name===pname;});
+        var s2 = pStats(pname, ss.course);
+        var isOpen = ss.openCard === pname;
+
+        h+='<div style="border-bottom:1px solid var(--sand);">';
+        h+='<div data-toggle-card="'+pname+'" style="display:flex;align-items:center;padding:10px 14px;cursor:pointer;">';
+        h+='<div style="flex:1;font-size:14px;font-weight:600;color:var(--ink);">'+pname+'</div>';
+        h+='<div style="font-size:13px;color:var(--ink2);margin-right:8px;">'+(s2.thru>0?s2.gross+' ('+s2.net+' net) &middot; '+s2.total+' pts':'No scores')+'</div>';
+        h+='<div style="font-size:12px;color:var(--ink3);transform:rotate('+(isOpen?'180':'0')+'deg);transition:transform 0.2s;">&#9660;</div>';
+        h+='</div>';
+
+        if(isOpen){
+          // Mini scorecard grid
+          h+='<div style="padding:0 14px 10px;">';
+
+          // Front 9
+          h+='<div style="display:flex;margin-bottom:2px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);font-weight:600;text-align:center;">Hole</div>';
+          for(var fi=0;fi<9;fi++){
+            h+='<div style="flex:1;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">'+c.holes[fi].num+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">Out</div>';
+          h+='</div>';
+
+          h+='<div style="display:flex;margin-bottom:2px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);text-align:center;">Par</div>';
+          var frontPar=0;
+          for(var fi=0;fi<9;fi++){
+            frontPar+=c.holes[fi].par;
+            h+='<div style="flex:1;text-align:center;font-size:10px;color:var(--ink3);">'+c.holes[fi].par+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">'+frontPar+'</div>';
+          h+='</div>';
+
+          h+='<div style="display:flex;margin-bottom:6px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);text-align:center;">Score</div>';
+          var frontTotal=0,frontHas=false;
+          for(var fi=0;fi<9;fi++){
+            var gs=ss.scores[pname][ss.course][fi];
+            if(gs!==null){frontTotal+=gs;frontHas=true;}
+            var diff=gs!==null?gs-c.holes[fi].par:null;
+            var bg=diff!==null?(scoreColorsH[diff<=-2?'-2':diff>=3?'3':String(diff)]||'var(--sand)'):'transparent';
+            h+='<div style="flex:1;text-align:center;font-size:11px;font-weight:700;'+(gs!==null?'color:var(--white);background:'+bg+';border-radius:4px;margin:0 1px;padding:1px 0;':'color:var(--sand-dark);')+'">'+(gs!==null?gs:'&ndash;')+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:11px;font-weight:700;color:var(--ink);">'+(frontHas?frontTotal:'&ndash;')+'</div>';
+          h+='</div>';
+
+          // Back 9
+          h+='<div style="display:flex;margin-bottom:2px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);font-weight:600;text-align:center;">Hole</div>';
+          for(var bi=9;bi<18;bi++){
+            h+='<div style="flex:1;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">'+c.holes[bi].num+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">In</div>';
+          h+='</div>';
+
+          h+='<div style="display:flex;margin-bottom:2px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);text-align:center;">Par</div>';
+          var backPar=0;
+          for(var bi=9;bi<18;bi++){
+            backPar+=c.holes[bi].par;
+            h+='<div style="flex:1;text-align:center;font-size:10px;color:var(--ink3);">'+c.holes[bi].par+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:10px;color:var(--ink3);font-weight:600;">'+backPar+'</div>';
+          h+='</div>';
+
+          h+='<div style="display:flex;margin-bottom:6px;">';
+          h+='<div style="width:36px;font-size:10px;color:var(--ink3);text-align:center;">Score</div>';
+          var backTotal=0,backHas=false;
+          for(var bi=9;bi<18;bi++){
+            var gs=ss.scores[pname][ss.course][bi];
+            if(gs!==null){backTotal+=gs;backHas=true;}
+            var diff=gs!==null?gs-c.holes[bi].par:null;
+            var bg=diff!==null?(scoreColorsH[diff<=-2?'-2':diff>=3?'3':String(diff)]||'var(--sand)'):'transparent';
+            h+='<div style="flex:1;text-align:center;font-size:11px;font-weight:700;'+(gs!==null?'color:var(--white);background:'+bg+';border-radius:4px;margin:0 1px;padding:1px 0;':'color:var(--sand-dark);')+'">'+(gs!==null?gs:'&ndash;')+'</div>';
+          }
+          h+='<div style="width:28px;text-align:center;font-size:11px;font-weight:700;color:var(--ink);">'+(backHas?backTotal:'&ndash;')+'</div>';
+          h+='</div>';
+
+          // Total row
+          h+='<div style="display:flex;justify-content:flex-end;gap:12px;padding:4px 0;font-size:12px;font-weight:700;color:var(--pine);">';
+          if(frontHas||backHas) h+='<span>Total: '+(frontTotal+backTotal)+'</span>';
+          h+='<span>'+s2.total+' pts</span>';
+          h+='</div>';
+
+          h+='</div>';
+        }
         h+='</div>';
       });
     }
@@ -953,6 +1051,7 @@ function bindScorer(){
   document.querySelectorAll('[data-sc]').forEach(function(b){b.addEventListener('click',function(){ss.course=b.dataset.sc;ss.hole=0;renderScorer();});});
   document.querySelectorAll('[data-sg]').forEach(function(b){b.addEventListener('click',function(){ss.group=parseInt(b.dataset.sg);ss.hole=0;renderScorer();});});
   document.querySelectorAll('[data-hn]').forEach(function(b){b.addEventListener('click',function(){ss.hole=parseInt(b.dataset.hn);renderScorer();window.scrollTo(0,document.querySelector('.s-hole-header').offsetTop-60);});});
+  document.querySelectorAll('[data-toggle-card]').forEach(function(b){b.addEventListener('click',function(){ss.openCard=ss.openCard===b.dataset.toggleCard?null:b.dataset.toggleCard;renderScorer();});});
   document.querySelectorAll('.s-score-btn').forEach(function(b){
     b.addEventListener('click',function(){
       var hi=parseInt(b.dataset.sh),dir=parseInt(b.dataset.sd),pname=b.dataset.sp;
@@ -983,6 +1082,203 @@ function bindScorer(){
   });
 }
 
+function renderStats(){
+  var c=COURSES[ss.course];
+  var h='';
+
+  h+='<div class="s-course-sel">';
+  ['verdict','birkdale'].forEach(function(ck){
+    var cc=COURSES[ck];
+    h+='<button class="s-cbtn'+(ss.course===ck?' act':'')+'" data-sc="'+ck+'">'+cc.name+'<span class="sc-day">'+cc.day+' - Par '+cc.par+'</span></button>';
+  });
+  h+='</div>';
+
+  function getDetailedStats(name, ck) {
+    var p = PLAYERS.find(function(x){return x.name===name;});
+    var c2 = COURSES[ck];
+    var counts = {eagle:0,birdie:0,par:0,bogey:0,dbl:0,triple:0};
+    var played = 0;
+    var par3avg=0,par4avg=0,par5avg=0,par3n=0,par4n=0,par5n=0;
+    var front=0,back=0,frontN=0,backN=0;
+    var best=99,worst=0,bestHole=0,worstHole=0;
+    for(var i=0;i<18;i++){
+      var g=ss.scores[name][ck][i];
+      if(g===null) continue;
+      played++;
+      var ho=c2.holes[i];
+      var diff=g-ho.par;
+      if(diff<=-2) counts.eagle++;
+      else if(diff===-1) counts.birdie++;
+      else if(diff===0) counts.par++;
+      else if(diff===1) counts.bogey++;
+      else if(diff===2) counts.dbl++;
+      else counts.triple++;
+      if(ho.par===3){par3avg+=g;par3n++;}
+      if(ho.par===4){par4avg+=g;par4n++;}
+      if(ho.par===5){par5avg+=g;par5n++;}
+      if(i<9){front+=g;frontN++;}else{back+=g;backN++;}
+      if(g<best){best=g;bestHole=ho.num;}
+      if(g>worst){worst=g;worstHole=ho.num;}
+    }
+    return {counts:counts,played:played,
+      par3avg:par3n>0?Math.round(par3avg/par3n*10)/10:0,par3n:par3n,
+      par4avg:par4n>0?Math.round(par4avg/par4n*10)/10:0,par4n:par4n,
+      par5avg:par5n>0?Math.round(par5avg/par5n*10)/10:0,par5n:par5n,
+      front:front,frontN:frontN,back:back,backN:backN,
+      best:best,bestHole:bestHole,worst:worst,worstHole:worstHole};
+  }
+
+  function renderDonut(counts, played, size) {
+    if(played===0) return '<div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px;">No scores yet</div>';
+    var colors = {eagle:'#D4AF37',birdie:'#1D9E75',par:'#3A7A5A',bogey:'#BA7517',dbl:'#D85A30',triple:'#C0392B'};
+    var labels = {eagle:'Eagle+',birdie:'Birdie',par:'Par',bogey:'Bogey',dbl:'Double',triple:'Triple+'};
+    var order = ['eagle','birdie','par','bogey','dbl','triple'];
+    var r = size/2, cx=r, cy=r, ir=r*0.62;
+    var svg = '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">';
+    var angle = -90;
+    order.forEach(function(k){
+      if(counts[k]===0) return;
+      var pct = counts[k]/played;
+      var sweep = pct*360;
+      if(sweep>=360) sweep=359.9;
+      var startAngle = angle * Math.PI/180;
+      var endAngle = (angle+sweep) * Math.PI/180;
+      var large = sweep > 180 ? 1 : 0;
+      var x1=cx+r*Math.cos(startAngle), y1=cy+r*Math.sin(startAngle);
+      var x2=cx+r*Math.cos(endAngle), y2=cy+r*Math.sin(endAngle);
+      var ix1=cx+ir*Math.cos(startAngle), iy1=cy+ir*Math.sin(startAngle);
+      var ix2=cx+ir*Math.cos(endAngle), iy2=cy+ir*Math.sin(endAngle);
+      svg += '<path d="M'+x1+' '+y1+' A'+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' L'+ix2+' '+iy2+' A'+ir+' '+ir+' 0 '+large+' 0 '+ix1+' '+iy1+' Z" fill="'+colors[k]+'" />';
+      angle += sweep;
+    });
+    svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)" font-family="DM Sans,sans-serif">'+played+'</text>';
+    svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" font-size="11" fill="var(--ink3)" font-family="DM Sans,sans-serif">holes</text>';
+    svg += '</svg>';
+    var leg = '<div style="display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;margin-top:8px;">';
+    order.forEach(function(k){
+      if(counts[k]===0) return;
+      var pct = Math.round(counts[k]/played*100);
+      leg += '<div style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink2);">';
+      leg += '<div style="width:8px;height:8px;border-radius:50%;background:'+colors[k]+';"></div>';
+      leg += labels[k]+' '+counts[k]+' ('+pct+'%)';
+      leg += '</div>';
+    });
+    leg += '</div>';
+    return '<div style="text-align:center;">'+svg+leg+'</div>';
+  }
+
+  // Player selector
+  h+='<div style="display:flex;gap:6px;padding:10px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;">';
+  h+='<button data-statspl="all" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid '+(ss.statsPlayer===null?'var(--pine)':'var(--sand-dark)')+';background:'+(ss.statsPlayer===null?'var(--pine)':'var(--white)')+';color:'+(ss.statsPlayer===null?'var(--white)':'var(--ink3)')+';cursor:pointer;font-family:DM Sans,sans-serif;">Everyone</button>';
+  PLAYERS.forEach(function(pl){
+    var isAct = ss.statsPlayer===pl.name;
+    h+='<button data-statspl="'+pl.name+'" style="flex-shrink:0;padding:5px 12px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid '+(isAct?'var(--pine)':'var(--sand-dark)')+';background:'+(isAct?'var(--pine)':'var(--white)')+';color:'+(isAct?'var(--white)':'var(--ink3)')+';cursor:pointer;font-family:DM Sans,sans-serif;">'+pl.name+'</button>';
+  });
+  h+='</div>';
+
+  if(ss.statsPlayer === null) {
+    var allCounts = {eagle:0,birdie:0,par:0,bogey:0,dbl:0,triple:0};
+    var allPlayed = 0;
+    PLAYERS.forEach(function(pl){
+      var ds = getDetailedStats(pl.name, ss.course);
+      Object.keys(allCounts).forEach(function(k){ allCounts[k]+=ds.counts[k]; });
+      allPlayed += ds.played;
+    });
+    h+='<div style="padding:16px 14px 8px;font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--pine);">Field overview</div>';
+    h+=renderDonut(allCounts, allPlayed, 160);
+
+    h+='<div style="padding:14px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">By player</div>';
+    var barColors = {eagle:'#D4AF37',birdie:'#1D9E75',par:'#3A7A5A',bogey:'#BA7517',dbl:'#D85A30',triple:'#C0392B'};
+    var barOrder = ['eagle','birdie','par','bogey','dbl','triple'];
+    PLAYERS.forEach(function(pl){
+      var ds = getDetailedStats(pl.name, ss.course);
+      if(ds.played === 0) return;
+      h+='<div style="padding:8px 14px;border-bottom:1px solid var(--sand);cursor:pointer;" data-statspl="'+pl.name+'">';
+      h+='<div style="display:flex;justify-content:space-between;margin-bottom:4px;">';
+      h+='<span style="font-size:13px;font-weight:600;color:var(--ink);">'+pl.name+'</span>';
+      var s3=pStats(pl.name,ss.course);
+      h+='<span style="font-size:12px;color:var(--ink3);">'+s3.gross+' ('+s3.net+' net) &middot; '+s3.total+' pts</span>';
+      h+='</div>';
+      h+='<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;">';
+      barOrder.forEach(function(k){
+        if(ds.counts[k]===0) return;
+        var pct = ds.counts[k]/ds.played*100;
+        h+='<div style="width:'+pct+'%;background:'+barColors[k]+';"></div>';
+      });
+      h+='</div></div>';
+    });
+  } else {
+    var plStat = PLAYERS.find(function(x){return x.name===ss.statsPlayer;});
+    var ds = getDetailedStats(ss.statsPlayer, ss.course);
+    var s2 = pStats(ss.statsPlayer, ss.course);
+
+    h+='<div style="padding:16px 14px 8px;font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--pine);">'+ss.statsPlayer+'</div>';
+
+    if(ds.played === 0) {
+      h+='<div style="padding:20px 14px;text-align:center;color:var(--ink3);font-size:13px;">No scores entered yet</div>';
+    } else {
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:0 14px 12px;">';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Gross</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+s2.gross+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Net</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+s2.net+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Pts</div><div style="font-size:18px;font-weight:700;color:var(--pine);">'+s2.total+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Hdcp</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+plStat.hdcp.toFixed(1)+'</div></div>';
+      h+='</div>';
+
+      h+=renderDonut(ds.counts, ds.played, 140);
+
+      h+='<div style="padding:14px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">Scoring averages</div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:6px 14px 12px;">';
+      if(ds.par3n>0) h+='<div style="background:var(--mint-bg);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--fairway);font-weight:600;">Par 3</div><div style="font-size:20px;font-weight:700;color:var(--pine);">'+ds.par3avg+'</div></div>';
+      if(ds.par4n>0) h+='<div style="background:var(--mint-bg);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--fairway);font-weight:600;">Par 4</div><div style="font-size:20px;font-weight:700;color:var(--pine);">'+ds.par4avg+'</div></div>';
+      if(ds.par5n>0) h+='<div style="background:var(--mint-bg);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--fairway);font-weight:600;">Par 5</div><div style="font-size:20px;font-weight:700;color:var(--pine);">'+ds.par5avg+'</div></div>';
+      h+='</div>';
+
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 14px 12px;">';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;">Front 9</div><div style="font-size:20px;font-weight:700;color:var(--ink);">'+(ds.frontN>0?ds.front:'--')+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;">Back 9</div><div style="font-size:20px;font-weight:700;color:var(--ink);">'+(ds.backN>0?ds.back:'--')+'</div></div>';
+      h+='</div>';
+
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 14px 14px;">';
+      h+='<div style="background:var(--mint-bg);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--fairway);font-weight:600;">Best hole</div><div style="font-size:18px;font-weight:700;color:var(--pine);">'+ds.best+'</div><div style="font-size:11px;color:var(--ink3);">Hole '+ds.bestHole+'</div></div>';
+      h+='<div style="background:#FFF3E0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--amber);font-weight:600;">Worst hole</div><div style="font-size:18px;font-weight:700;color:var(--amber);">'+ds.worst+'</div><div style="font-size:11px;color:var(--ink3);">Hole '+ds.worstHole+'</div></div>';
+      h+='</div>';
+
+      h+='<div style="padding:4px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">Hole by hole</div>';
+      var scoreColors2 = {'-2':'#D4AF37','-1':'#1D9E75','0':'#3A7A5A','1':'#BA7517','2':'#D85A30','3':'#C0392B'};
+      for(var i=0;i<18;i++){
+        var g=ss.scores[ss.statsPlayer][ss.course][i];
+        if(g===null) continue;
+        var ho=c.holes[i];
+        var diff=g-ho.par;
+        var diffKey = diff<=-2?'-2':diff>=3?'3':String(diff);
+        var diffLabel = diff<=-2?'Eagle+':diff===-1?'Birdie':diff===0?'Par':diff===1?'Bogey':diff===2?'Double':'Triple+';
+        var sk=getStrokes(plStat.hdcp,ho.hdcp);
+        var pts=stPts(g,ho.par,sk);
+        h+='<div style="display:flex;align-items:center;padding:6px 14px;border-bottom:1px solid var(--sand);font-size:13px;">';
+        h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+ho.num+'</div>';
+        h+='<div style="width:40px;color:var(--ink3);">Par '+ho.par+'</div>';
+        h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+g+'</div>';
+        h+='<div style="flex:1;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:'+(scoreColors2[diffKey]||'var(--sand)')+';color:var(--white);">'+diffLabel+'</span></div>';
+        h+='<div style="width:28px;text-align:right;font-weight:700;color:var(--pine);">'+pts+'</div>';
+        h+='</div>';
+      }
+    }
+  }
+
+  document.getElementById('statsApp').innerHTML=h;
+
+  // Bind stats events
+  document.querySelectorAll('#statsApp [data-statspl]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      ss.statsPlayer = btn.dataset.statspl === 'all' ? null : btn.dataset.statspl;
+      renderStats();
+    });
+  });
+  document.querySelectorAll('#statsApp [data-sc]').forEach(function(b){
+    b.addEventListener('click',function(){ss.course=b.dataset.sc;renderStats();});
+  });
+}
+
 // Nav
 document.querySelectorAll('#mainNav button').forEach(function(btn){
   btn.addEventListener('click',function(){
@@ -991,6 +1287,7 @@ document.querySelectorAll('#mainNav button').forEach(function(btn){
     document.querySelectorAll('.page').forEach(function(p){p.classList.remove('vis');});
     document.getElementById('pg-'+btn.dataset.page).classList.add('vis');
     if(btn.dataset.page==='scorer')renderScorer();
+    if(btn.dataset.page==='stats')renderStats();
     window.scrollTo(0,0);
   });
 });
@@ -1017,26 +1314,21 @@ function hasFridayScores() {
   return count >= 2;
 }
 
-// Balanced distribution: sort 1-10 by Friday pts, deal into 3 groups
-// Pattern: 1->G1, 2->G2, 3->G3, 4->G3, 5->G2, 6->G1, 7->G1, 8->G2, 9->G3, 10->G3
-// This gives groups of 4-3-3 with balanced point totals
+// Tiered distribution: sort 1-10 by Friday pts
+// Bottom 4 -> Group 1 (1:00p), Middle 3 -> Group 2 (1:10p), Top 3 -> Group 3 (1:20p)
 function autoBalanceGroups() {
   var ranked = getFridayRanking();
-  var g1 = [], g2 = [], g3 = [];
-  var pattern = [g1, g2, g3, g3, g2, g1, g1, g2, g3, g3];
-  ranked.forEach(function(p, i) {
-    pattern[i].push(p.name);
-  });
+  var g1 = ranked.slice(7,10).map(function(p){return p.name;}).concat([ranked[6].name]);
+  var g2 = ranked.slice(4,7).map(function(p){return p.name;});
+  var g3 = ranked.slice(0,4).map(function(p){return p.name;}).slice(0,3);
   return [g1, g2, g3];
 }
 
 function shuffleGroups() {
   var ranked = getFridayRanking();
-  // Keep top/middle/bottom tiers but randomize within tiers
-  var top = ranked.slice(0, 3);
-  var mid = ranked.slice(3, 7);
-  var bot = ranked.slice(7, 10);
-  // Shuffle each tier
+  var bot = ranked.slice(6,10);
+  var mid = ranked.slice(3,6);
+  var top = ranked.slice(0,3);
   function shuffle(arr) {
     for (var i = arr.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -1044,11 +1336,10 @@ function shuffleGroups() {
     }
     return arr;
   }
-  shuffle(top); shuffle(mid); shuffle(bot);
-  // Deal: one from each tier per group, then distribute remaining mid players
-  var g1 = [top[0].name, mid[0].name, bot[0].name, mid[3].name];
-  var g2 = [top[1].name, mid[1].name, bot[1].name];
-  var g3 = [top[2].name, mid[2].name, bot[2].name];
+  shuffle(bot); shuffle(mid); shuffle(top);
+  var g1 = bot.map(function(p){return p.name;});
+  var g2 = mid.map(function(p){return p.name;});
+  var g3 = top.map(function(p){return p.name;});
   return [g1, g2, g3];
 }
 
@@ -1063,7 +1354,7 @@ function renderSaturdayGroups() {
     g1el.textContent = 'TBD';
     g2el.textContent = 'TBD';
     g3el.textContent = 'TBD';
-    el.innerHTML = '<div class="sat-gen-wrap"><div class="sat-gen-title">Saturday groups</div><div class="sat-no-scores">Enter Friday scores in the Scorer tab. Groups will auto-generate based on Stableford results, balancing each group with a mix of top, middle, and bottom finishers.</div></div>';
+    el.innerHTML = '<div class="sat-gen-wrap"><div class="sat-gen-title">Saturday groups</div><div class="sat-no-scores">Enter Friday scores in the Scorecard tab. Groups will auto-generate tiered by score. Bottom 4 go off first, middle 3 next, top 3 last.</div></div>';
     return;
   }
 
@@ -1079,7 +1370,7 @@ function renderSaturdayGroups() {
 
   var h = '<div class="sat-gen-wrap">';
   h += '<div class="sat-gen-title">Friday results &rarr; Saturday groups</div>';
-  h += '<div class="sat-gen-sub">Sorted by Friday Stableford points, then dealt into balanced groups so each has a mix of top, middle, and bottom finishers.</div>';
+  h += '<div class="sat-gen-sub">Tiered by Friday Stableford points. Bottom 4 go off first, middle 3 next, top 3 last.</div>';
 
   ranked.forEach(function(p, i) {
     var grpNum = '-';
