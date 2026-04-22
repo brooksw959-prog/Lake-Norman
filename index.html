@@ -389,6 +389,64 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 .sat-rank-grp { font-size: 11px; color: var(--bark); min-width: 52px; text-align: right; margin-left: 8px; }
 .sat-no-scores { font-size: 13px; color: var(--ink3); line-height: 1.6; }
 
+.s-grp-sel { display: flex; gap: 8px; padding: 8px 14px; }
+.s-grp-btn {
+  flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 600;
+  border-radius: 8px; border: 1.5px solid var(--sand-dark); background: var(--white);
+  color: var(--ink3); cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.s-grp-btn.act { border-color: var(--pine); background: var(--mint-bg); color: var(--pine); }
+.s-grp-btn .sg-names { font-size: 11px; font-weight: 400; color: var(--ink3); display: block; margin-top: 2px; }
+.s-grp-btn.act .sg-names { color: var(--fairway); }
+
+.s-hole-header {
+  padding: 12px 14px 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border-bottom: 1px solid var(--sand-dark);
+  background: var(--sand);
+}
+.s-hole-title { font-size: 18px; font-weight: 700; color: var(--pine); }
+.s-hole-meta { font-size: 13px; color: var(--ink3); }
+
+.s-player-score-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--sand);
+}
+.s-psr-info { flex: 1; }
+.s-psr-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.s-psr-detail { font-size: 11px; color: var(--ink3); }
+.s-psr-score { display: flex; align-items: center; }
+.s-psr-pts {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; margin-left: 8px;
+}
+
+.s-hole-nav {
+  display: flex; gap: 8px; padding: 12px 14px;
+  justify-content: center;
+}
+.s-hole-nav-btn {
+  padding: 10px 24px; font-size: 13px; font-weight: 600;
+  border-radius: 8px; border: 1.5px solid var(--sand-dark); background: var(--white);
+  color: var(--ink2); cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.s-hole-nav-btn:active { background: var(--sand); }
+.s-hole-nav-btn.primary { background: var(--pine); color: var(--white); border-color: var(--pine); }
+.s-hole-nav-btn.primary:active { opacity: 0.85; }
+
+.s-grp-summary-row {
+  display: flex; align-items: center; padding: 8px 14px;
+  border-bottom: 1px solid var(--sand); font-size: 14px;
+}
+.s-grp-summary-name { flex: 1; font-weight: 600; color: var(--ink); }
+.s-grp-summary-pts { font-weight: 700; color: var(--pine); min-width: 40px; text-align: right; }
+.s-grp-summary-thru { font-size: 12px; color: var(--ink3); min-width: 48px; text-align: right; margin-left: 8px; }
+
 .footer {
   text-align: center;
   padding: 32px 24px;
@@ -408,17 +466,23 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 
 <nav id="mainNav">
   <button class="act" data-page="itinerary">Itinerary</button>
-  <button data-page="players">Players</button>
   <button data-page="menu">Menu</button>
-  <button data-page="rules">Stableford</button>
-  <button data-page="bets">Bets</button>
-  <button data-page="scorer">Scorer</button>
+  <button data-page="players">Handicaps</button>
+  <button data-page="gambling">Gambling</button>
+  <button data-page="scorer">Scorecard</button>
 </nav>
 
 <!-- ITINERARY -->
 <div class="page vis" id="pg-itinerary">
 
   <div class="day-banner"><span class="day-name">Thursday</span><span class="day-desc">Arrivals</span></div>
+
+  <div class="event">
+    <div class="ev-time">Tuesday</div>
+    <div class="ev-body">
+      <div class="ev-title">Ryan</div>
+    </div>
+  </div>
 
   <div class="event">
     <div class="ev-time">10:20a</div>
@@ -455,14 +519,16 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     </div>
   </div>
 
-  <div class="event">
-    <div class="ev-time"></div>
-    <div class="ev-body">
-      <div class="ev-sub" style="color:var(--ink3);">Ryan arrives Tuesday (already there)</div>
+  <div class="section-card" style="margin:12px 16px;">
+    <div class="sc-header">Meet up before check-in</div>
+    <div class="sc-body">
+      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;">King Canary Brewing Co</div>
+      <div style="font-size:13px;color:var(--ink3);">Williamson Rd, Mooresville, NC</div>
+      <div style="font-size:12px;color:var(--bark);margin-top:4px;">14 minutes from AirBnB</div>
     </div>
   </div>
 
-  <div class="day-banner"><span class="day-name">Friday</span><span class="day-desc">Verdict Ridge</span></div>
+  <div class="day-banner"><span class="day-name">Friday</span></div>
 
   <div class="section-card" style="margin:0 16px 12px;">
     <div class="sc-header">Verdict Ridge Golf &amp; Country Club</div>
@@ -497,7 +563,7 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     </div>
   </div>
 
-  <div class="day-banner"><span class="day-name">Saturday</span><span class="day-desc">Birkdale</span></div>
+  <div class="day-banner"><span class="day-name">Saturday</span></div>
 
   <div class="section-card" style="margin:0 16px 12px;">
     <div class="sc-header">Birkdale Golf Club</div>
@@ -542,17 +608,6 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     <div class="sc-header">Handicaps</div>
     <div class="sc-body" id="hdcpList"></div>
   </div>
-  <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Thursday arrivals</div>
-    <div class="sc-body">
-      <div class="arrival-row"><span class="ar-names">Ryan</span><span class="ar-time">Tuesday</span></div>
-      <div class="arrival-row"><span class="ar-names">Jack, Alex, Jason, PJ</span><span class="ar-time">10:20 AM</span></div>
-      <div class="arrival-row"><span class="ar-names">Andrew, Bill</span><span class="ar-time">11:00 AM</span></div>
-      <div class="arrival-row"><span class="ar-names">Sheehan</span><span class="ar-time">12:15 PM</span></div>
-      <div class="arrival-row"><span class="ar-names">Jake</span><span class="ar-time">2:30 PM</span></div>
-      <div class="arrival-row"><span class="ar-names">Cole</span><span class="ar-time">10:00 PM</span></div>
-    </div>
-  </div>
 </div>
 
 <!-- MENU -->
@@ -571,19 +626,14 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
   </div>
 
   <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Snacks &amp; apps</div>
-    <div class="sc-body">Hamburgers &amp; hot dogs, chicken tenders (late night), deli meat &amp; cheese, Uncrustables, cheese, crackers &amp; pepperoni, potato chips, Chex Mix, granola bars, watermelon, grapes, bananas, clementines, assorted yogurts, ice cream sandwiches</div>
-  </div>
-
-  <div class="section-card" style="margin-top:12px;">
     <div class="sc-header">Drinks (non-alcoholic)</div>
     <div class="sc-body">Gatorade, Celsius, Liquid IV, coffee, bottled water, ginger ale, seltzer</div>
   </div>
 
 </div>
 
-<!-- STABLEFORD RULES -->
-<div class="page" id="pg-rules">
+<!-- GAMBLING -->
+<div class="page" id="pg-gambling">
   <div class="section-card">
     <div class="sc-header">How Stableford works</div>
     <div class="sc-body">
@@ -599,43 +649,35 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
     </div>
   </div>
   <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Why Stableford</div>
-    <div class="sc-body">
-      <p>Your handicap range is 4.5 to 23, almost a 19-shot spread. In stroke play, the higher handicaps can blow up on a couple holes and they're mentally out by the turn. Stableford caps the damage. You pick up and move on, pace of play stays solid, and everyone's in it until the end.</p>
-    </div>
-  </div>
-</div>
-
-<!-- BETS -->
-<div class="page" id="pg-bets">
-  <div class="section-card">
-    <div class="sc-header">Betting structure</div>
+    <div class="sc-header">Betting structure (proposed)</div>
     <div class="sc-body">
       <div class="bet-card">
-        <div class="bet-label">Layer 1: Main pot</div>
+        <div class="bet-label">Main pot</div>
         <div class="bet-desc">Highest Stableford points on the day takes the pot. Split 60/30/10 across top three.</div>
         <div class="bet-amount">$20 per player</div>
       </div>
       <div class="bet-card">
-        <div class="bet-label">Layer 2: Skins</div>
+        <div class="bet-label">Skins</div>
         <div class="bet-desc">$2/hole per player. Highest net Stableford points on each hole wins the skin. Ties carry over.</div>
         <div class="bet-amount">$20 per player ($2 x 10 players = $20/hole)</div>
       </div>
-      <div class="bet-card">
-        <div class="bet-label">Layer 3: Side bets</div>
-        <div class="bet-desc">Closest to the pin on par 3s. Longest drive on a designated par 5. "Worst to first" bonus if the highest handicap in any group beats the lowest.</div>
-        <div class="bet-amount">$5 buy-in each</div>
-      </div>
       <div style="margin-top:14px;padding:12px 14px;background:var(--mint-bg);border-radius:10px;">
-        <div style="font-size:13px;font-weight:700;color:var(--pine);">Total per person: ~$50</div>
-        <div style="font-size:12px;color:var(--fairway);margin-top:2px;">$500 total in play. Enough to care, not enough to ruin the weekend.</div>
+        <div style="font-size:13px;font-weight:700;color:var(--pine);">Total per person: $40</div>
+        <div style="font-size:12px;color:var(--fairway);margin-top:2px;">$400 total in play per round.</div>
       </div>
     </div>
   </div>
   <div class="section-card" style="margin-top:12px;">
-    <div class="sc-header">Saturday groupings</div>
+    <div class="sc-header">Saturday groupings (vote)</div>
     <div class="sc-body">
-      <p>Lowest net Stableford score on Friday gets first captain pick. Second lowest gets second captain, third lowest gets third. Captains snake-draft the remaining 7 guys Friday night.</p>
+      <div class="bet-card">
+        <div class="bet-label">Option A: Balanced</div>
+        <div class="bet-desc">Groups are auto-balanced from Friday results. Each group gets a mix of top, middle, and bottom finishers so Saturday stays competitive across all three groups.</div>
+      </div>
+      <div class="bet-card">
+        <div class="bet-label">Option B: Tiered by score</div>
+        <div class="bet-desc">Groups are stacked by Friday finish. Bottom 4 go off first (1:00p), middle 3 next (1:10p), top 3 go off last (1:20p). Best players earn the latest tee time.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -681,7 +723,19 @@ var PLAYERS = [
   {name:'Cole',hdcp:18.6},{name:'Ryan',hdcp:22.2},{name:'PJ',hdcp:22.9},{name:'Jake',hdcp:23}
 ];
 
-var ss = { view:'scorecard', course:'verdict', player:'Jack', scores:{} };
+var FRIDAY_GROUPS = [
+  { name: 'Group 1', time: '10:00a', players: ['Cole','PJ','Ryan'] },
+  { name: 'Group 2', time: '10:10a', players: ['Alex','Jason','Jake'] },
+  { name: 'Group 3', time: '10:20a', players: ['Andrew','Bill','Jack','Sheehan'] }
+];
+
+var SATURDAY_GROUPS = [
+  { name: 'Group 1', time: '1:00p', players: [] },
+  { name: 'Group 2', time: '1:10p', players: [] },
+  { name: 'Group 3', time: '1:20p', players: [] }
+];
+
+var ss = { view:'scorecard', course:'verdict', group:0, hole:0, scores:{} };
 PLAYERS.forEach(function(p){ ss.scores[p.name]={verdict:new Array(18).fill(null),birkdale:new Array(18).fill(null)}; });
 
 function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:2,c:ss.course,p:ss.player,d:d});}catch(e){}}
@@ -692,35 +746,102 @@ function stPts(g,p,s){if(g===null)return null;var d=g-s-p;if(d<=-3)return 5;if(d
 function pStats(n,ck){var p=PLAYERS.find(function(x){return x.name===n;}),c=COURSES[ck],t=0,th=0,gr=0;for(var i=0;i<18;i++){var g=ss.scores[n][ck][i];if(g!==null){var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts!==null){t+=pts;th=i+1;gr+=g;}}}return{total:t,thru:th,gross:gr};}
 function getSkins(ck){var c=COURSES[ck],r=[],co=0,sv=2*PLAYERS.length;for(var i=0;i<18;i++){var best=-1,bn='',tie=false,any=false;PLAYERS.forEach(function(p){var g=ss.scores[p.name][ck][i];if(g!==null){any=true;var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts>best){best=pts;bn=p.name;tie=false;}else if(pts===best)tie=true;}});if(!any)r.push({hole:i+1,winner:null,value:0,carry:co,noData:true});else if(tie||best<=0){co+=sv;r.push({hole:i+1,winner:null,value:0,carry:co,noData:false});}else{var w=sv+co;r.push({hole:i+1,winner:bn,value:w,carry:0,noData:false});co=0;}}return r;}
 
+function getGroups(ck) {
+  if (ck === 'verdict') return FRIDAY_GROUPS;
+  if (satGroups && satGroups[0].length > 0) {
+    return [
+      { name: 'Group 1', time: '1:00p', players: satGroups[0] },
+      { name: 'Group 2', time: '1:10p', players: satGroups[1] },
+      { name: 'Group 3', time: '1:20p', players: satGroups[2] }
+    ];
+  }
+  return SATURDAY_GROUPS;
+}
+
 function renderScorer(){
-  var p=PLAYERS.find(function(x){return x.name===ss.player;}),c=COURSES[ss.course],st=pStats(ss.player,ss.course);
+  var c=COURSES[ss.course];
+  var groups = getGroups(ss.course);
+  var grp = groups[ss.group] || groups[0];
   var h='';
+
   h+='<div class="s-tabs">';
-  ['scorecard','leaderboard','skins'].forEach(function(v){var l=v==='scorecard'?'Scorecard':v==='leaderboard'?'Leaderboard':'Skins';h+='<button class="s-tab'+(ss.view===v?' act':'')+'" data-sv="'+v+'">'+l+'</button>';});
+  ['scorecard','leaderboard','skins'].forEach(function(v){
+    var l=v==='scorecard'?'Scorecard':v==='leaderboard'?'Leaderboard':'Skins';
+    h+='<button class="s-tab'+(ss.view===v?' act':'')+'" data-sv="'+v+'">'+l+'</button>';
+  });
   h+='</div>';
+
   h+='<div class="s-course-sel">';
-  ['verdict','birkdale'].forEach(function(ck){var cc=COURSES[ck];h+='<button class="s-cbtn'+(ss.course===ck?' act':'')+'" data-sc="'+ck+'">'+cc.name+'<span class="sc-day">'+cc.day+' - Par '+cc.par+'</span></button>';});
+  ['verdict','birkdale'].forEach(function(ck){
+    var cc=COURSES[ck];
+    h+='<button class="s-cbtn'+(ss.course===ck?' act':'')+'" data-sc="'+ck+'">'+cc.name+'<span class="sc-day">'+cc.day+' - Par '+cc.par+'</span></button>';
+  });
   h+='</div>';
 
   if(ss.view==='scorecard'){
-    h+='<div class="s-players">';
-    PLAYERS.forEach(function(pl){h+='<button class="s-pbtn'+(ss.player===pl.name?' act':'')+'" data-sp="'+pl.name+'">'+pl.name+'</button>';});
+    // Group selector
+    h+='<div class="s-grp-sel">';
+    groups.forEach(function(g, gi){
+      var names = g.players.length > 0 ? g.players.join(', ') : 'TBD';
+      h+='<button class="s-grp-btn'+(ss.group===gi?' act':'')+'" data-sg="'+gi+'">';
+      h+=g.name;
+      h+='<span class="sg-names">'+names+'</span>';
+      h+='</button>';
+    });
     h+='</div>';
-    h+='<div class="s-stats"><div class="s-stat"><div class="s-stat-l">Hdcp</div><div class="s-stat-v">'+p.hdcp.toFixed(1)+'</div></div><div class="s-stat"><div class="s-stat-l">Points</div><div class="s-stat-v pts">'+st.total+'</div></div><div class="s-stat"><div class="s-stat-l">Thru</div><div class="s-stat-v">'+st.thru+'</div></div></div>';
 
-    function rNine(s,e,label){
-      h+='<div class="s-nine-label">'+label+'</div>';
-      var pt=0,ptt=0;
-      for(var i=s;i<e;i++){
-        var ho=c.holes[i],sk=getStrokes(p.hdcp,ho.hdcp),g=ss.scores[ss.player][ss.course][i],pts=g!==null?stPts(g,ho.par,sk):null;
-        pt+=ho.par;if(pts!==null)ptt+=pts;
-        h+='<div class="s-hole-row"><div class="s-hole-info"><div class="s-hole-num">'+ho.num+'</div><div class="s-hole-par">Par '+ho.par+'</div></div><div class="s-hole-mid"><div class="s-dot" style="'+(sk>0?'':'opacity:0')+'"></div>'+(sk>1?'<div class="s-dot"></div>':'')+'</div><div class="s-score-wrap"><button class="s-score-btn" data-sh="'+i+'" data-sd="-1">&minus;</button><div class="s-score-val'+(g===null?' empty':'')+'" id="ssv'+i+'">'+(g!==null?g:'&ndash;')+'</div><button class="s-score-btn" data-sh="'+i+'" data-sd="1">+</button></div><div class="s-pts sp-'+(pts!==null?Math.min(pts,5):'null')+'">'+(pts!==null?pts:'&ndash;')+'</div></div>';
-      }
-      h+='<div class="s-nine-total"><span>'+label+' &middot; Par '+pt+'</span><span class="snt-pts">'+ptt+' pts</span></div>';
+    if(grp.players.length === 0){
+      h+='<div style="padding:40px 14px;text-align:center;color:var(--ink3);font-size:14px;">Saturday groups will populate after Friday scores are entered</div>';
+    } else {
+      // Hole view
+      var hi = ss.hole;
+      var ho = c.holes[hi];
+      h+='<div class="s-hole-header">';
+      h+='<span class="s-hole-title">Hole '+ho.num+'</span>';
+      h+='<span class="s-hole-meta">Par '+ho.par+' &middot; Hdcp '+ho.hdcp+'</span>';
+      h+='</div>';
+
+      // Each player in the group
+      grp.players.forEach(function(pname){
+        var pl = PLAYERS.find(function(x){return x.name===pname;});
+        var sk = getStrokes(pl.hdcp, ho.hdcp);
+        var g = ss.scores[pname][ss.course][hi];
+        var pts = g !== null ? stPts(g, ho.par, sk) : null;
+        var dots = '';
+        for(var d=0;d<sk;d++) dots += '<div class="s-dot" style="display:inline-block;margin-right:3px;"></div>';
+
+        h+='<div class="s-player-score-row">';
+        h+='<div class="s-psr-info"><div class="s-psr-name">'+pname+'</div>';
+        h+='<div class="s-psr-detail">'+pl.hdcp.toFixed(1)+' hdcp'+( sk>0 ? ' &middot; '+dots+' stroke'+(sk>1?'s':'') : '')+'</div></div>';
+        h+='<div class="s-psr-score">';
+        h+='<button class="s-score-btn" data-sh="'+hi+'" data-sd="-1" data-sp="'+pname+'">&minus;</button>';
+        h+='<div class="s-score-val'+(g===null?' empty':'')+'">'+(g!==null?g:'&ndash;')+'</div>';
+        h+='<button class="s-score-btn" data-sh="'+hi+'" data-sd="1" data-sp="'+pname+'">+</button>';
+        h+='</div>';
+        h+='<div class="s-psr-pts sp-'+(pts!==null?Math.min(pts,5):'null')+'">'+(pts!==null?pts:'&ndash;')+'</div>';
+        h+='</div>';
+      });
+
+      // Hole navigation
+      h+='<div class="s-hole-nav">';
+      if(hi > 0) h+='<button class="s-hole-nav-btn" data-hn="'+(hi-1)+'">&larr; Hole '+c.holes[hi-1].num+'</button>';
+      if(hi < 17) h+='<button class="s-hole-nav-btn primary" data-hn="'+(hi+1)+'">Hole '+c.holes[hi+1].num+' &rarr;</button>';
+      h+='</div>';
+
+      // Group summary
+      h+='<div style="padding:10px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">'+grp.name+' standings</div>';
+      var gsorted = grp.players.map(function(pn){
+        var s2=pStats(pn,ss.course);
+        return {name:pn, total:s2.total, thru:s2.thru};
+      }).sort(function(a,b){ return b.total-a.total; });
+      gsorted.forEach(function(ps){
+        h+='<div class="s-grp-summary-row">';
+        h+='<div class="s-grp-summary-name">'+ps.name+'</div>';
+        h+='<div class="s-grp-summary-pts">'+ps.total+' pts</div>';
+        h+='<div class="s-grp-summary-thru">'+(ps.thru>0?'thru '+ps.thru:'&ndash;')+'</div>';
+        h+='</div>';
+      });
     }
-    rNine(0,9,'Front 9');rNine(9,18,'Back 9');
-    h+='<div class="s-total-bar"><div><div class="stl">Total &middot; Par '+c.par+(st.thru>0?' &middot; Gross '+st.gross:'')+'</div></div><div class="stv">'+st.total+' pts</div></div>';
-    h+='<div class="s-reset-wrap"><button class="s-reset-btn" id="sResetBtn">Reset '+ss.player+'\'s scores</button></div>';
 
   } else if(ss.view==='leaderboard'){
     var lb=PLAYERS.map(function(pl){var s2=pStats(pl.name,ss.course);return{name:pl.name,hdcp:pl.hdcp,total:s2.total,thru:s2.thru};}).sort(function(a,b){return b.total-a.total||a.hdcp-b.hdcp;});
@@ -754,20 +875,20 @@ function renderScorer(){
 
 function bindScorer(){
   document.querySelectorAll('.s-tab').forEach(function(b){b.addEventListener('click',function(){ss.view=b.dataset.sv;renderScorer();});});
-  document.querySelectorAll('[data-sc]').forEach(function(b){b.addEventListener('click',function(){ss.course=b.dataset.sc;renderScorer();});});
-  document.querySelectorAll('[data-sp]').forEach(function(b){b.addEventListener('click',function(){ss.player=b.dataset.sp;renderScorer();});});
+  document.querySelectorAll('[data-sc]').forEach(function(b){b.addEventListener('click',function(){ss.course=b.dataset.sc;ss.hole=0;renderScorer();});});
+  document.querySelectorAll('[data-sg]').forEach(function(b){b.addEventListener('click',function(){ss.group=parseInt(b.dataset.sg);ss.hole=0;renderScorer();});});
+  document.querySelectorAll('[data-hn]').forEach(function(b){b.addEventListener('click',function(){ss.hole=parseInt(b.dataset.hn);renderScorer();window.scrollTo(0,document.querySelector('.s-hole-header').offsetTop-60);});});
   document.querySelectorAll('.s-score-btn').forEach(function(b){
     b.addEventListener('click',function(){
-      var hi=parseInt(b.dataset.sh),dir=parseInt(b.dataset.sd),cur=ss.scores[ss.player][ss.course][hi],par=COURSES[ss.course].holes[hi].par;
+      var hi=parseInt(b.dataset.sh),dir=parseInt(b.dataset.sd),pname=b.dataset.sp;
+      var cur=ss.scores[pname][ss.course][hi],par=COURSES[ss.course].holes[hi].par;
       if(cur===null)cur=par;else cur=cur+dir;
       if(cur<1)cur=null;if(cur!==null&&cur>12)cur=12;
-      ss.scores[ss.player][ss.course][hi]=cur;
+      ss.scores[pname][ss.course][hi]=cur;
       saveS();renderScorer();
       if(ss.course==='verdict' && satGroups) { satGroups=null; renderSaturdayGroups(); }
     });
   });
-  var rb=document.getElementById('sResetBtn');
-  if(rb)rb.addEventListener('click',function(){if(confirm('Reset '+ss.player+'\'s scores on '+COURSES[ss.course].name+'?')){ss.scores[ss.player][ss.course]=new Array(18).fill(null);saveS();renderScorer();}});
 }
 
 // Nav
@@ -914,6 +1035,7 @@ document.getElementById('hdcpList').innerHTML=hdcpHtml;
 
 loadS();
 renderSaturdayGroups();
+renderScorer();
 </script>
 </body>
 </html>
