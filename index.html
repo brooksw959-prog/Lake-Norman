@@ -389,6 +389,15 @@ nav button.act { color: var(--pine); border-bottom-color: var(--pine); }
 .sat-rank-grp { font-size: 11px; color: var(--bark); min-width: 52px; text-align: right; margin-left: 8px; }
 .sat-no-scores { font-size: 13px; color: var(--ink3); line-height: 1.6; }
 
+.gs { display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;font-size:10px;font-weight:700;line-height:1; }
+.gs-eagle { border-radius:50%;border:1.5px solid #D4AF37;outline:1.5px solid #D4AF37;outline-offset:1.5px;color:#D4AF37; }
+.gs-birdie { border-radius:50%;border:1.5px solid #1D9E75;color:#1D9E75; }
+.gs-par { color:var(--ink); }
+.gs-bogey { border:1.5px solid #BA7517;color:#BA7517; }
+.gs-dbl { border:1.5px solid #D85A30;outline:1.5px solid #D85A30;outline-offset:1.5px;color:#D85A30; }
+.gs-triple { border:1.5px solid #C0392B;outline:1.5px solid #C0392B;outline-offset:1.5px;color:#C0392B; }
+.gs-empty { color:var(--sand-dark); }
+
 .s-grp-sel { display: flex; gap: 8px; padding: 8px 14px; }
 .s-grp-btn {
   flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 600;
@@ -760,7 +769,7 @@ var SATURDAY_GROUPS = [
   { name: 'Group 3', time: '1:20p', players: [] }
 ];
 
-var ss = { view:'scorecard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}}, statsPlayer:null, openCard:null, votes:{} };
+var ss = { view:'scorecard', course:'verdict', group:0, hole:0, scores:{}, ctp:{verdict:{},birkdale:{}}, statsPlayer:null, openCard:null, votes:{}, statsCourse:'verdict' };
 PLAYERS.forEach(function(p){ ss.scores[p.name]={verdict:new Array(18).fill(null),birkdale:new Array(18).fill(null)}; });
 
 function saveS(){try{var d={};PLAYERS.forEach(function(p){d[p.name]={v:ss.scores[p.name].verdict,b:ss.scores[p.name].birkdale};});window.name=JSON.stringify({ver:4,c:ss.course,d:d,ctp:ss.ctp,votes:ss.votes});}catch(e){}}
@@ -768,8 +777,15 @@ function loadS(){try{if(!window.name)return;var o=JSON.parse(window.name);if(!o.
 
 function getStrokes(h,hh){var f=Math.floor(h),s=0;if(hh<=f)s++;if(h>18&&hh<=(f-18))s++;return s;}
 function stPts(g,p,s){if(g===null)return null;var d=g-s-p;if(d<=-3)return 5;if(d===-2)return 4;if(d===-1)return 3;if(d===0)return 2;if(d===1)return 1;return 0;}
-function pStats(n,ck){var p=PLAYERS.find(function(x){return x.name===n;}),c=COURSES[ck],t=0,th=0,gr=0,net=0;for(var i=0;i<18;i++){var g=ss.scores[n][ck][i];if(g!==null){var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts!==null){t+=pts;th=i+1;gr+=g;net+=g-s;}}}return{total:t,thru:th,gross:gr,net:net};}
+function pStats(n,ck){var p=PLAYERS.find(function(x){return x.name===n;}),c=COURSES[ck],t=0,th=0,gr=0,net=0,parTotal=0;for(var i=0;i<18;i++){var g=ss.scores[n][ck][i];if(g!==null){var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts!==null){t+=pts;th=i+1;gr+=g;net+=g-s;parTotal+=c.holes[i].par;}}}var overUnder=gr-parTotal;return{total:t,thru:th,gross:gr,net:net,overUnder:overUnder,parTotal:parTotal};}
 function getSkins(ck){var c=COURSES[ck],r=[],co=0,sv=2*PLAYERS.length;for(var i=0;i<18;i++){var best=-1,bn='',tie=false,any=false;PLAYERS.forEach(function(p){var g=ss.scores[p.name][ck][i];if(g!==null){any=true;var s=getStrokes(p.hdcp,c.holes[i].hdcp),pts=stPts(g,c.holes[i].par,s);if(pts>best){best=pts;bn=p.name;tie=false;}else if(pts===best)tie=true;}});if(!any)r.push({hole:i+1,winner:null,value:0,carry:co,noData:true});else if(tie||best<=0){co+=sv;r.push({hole:i+1,winner:null,value:0,carry:co,noData:false});}else{var w=sv+co;r.push({hole:i+1,winner:bn,value:w,carry:0,noData:false});co=0;}}return r;}
+
+function golfScoreCell(score, par) {
+  if(score===null) return '<div class="gs gs-empty">&ndash;</div>';
+  var diff = score - par;
+  var cls = diff<=-2?'gs-eagle':diff===-1?'gs-birdie':diff===0?'gs-par':diff===1?'gs-bogey':diff===2?'gs-dbl':'gs-triple';
+  return '<div class="gs '+cls+'">'+score+'</div>';
+}
 
 function getGroups(ck) {
   if (ck === 'verdict') return FRIDAY_GROUPS;
@@ -889,7 +905,10 @@ function renderScorer(){
         h+='<div class="s-psr-detail">'+pl.hdcp.toFixed(1)+' hdcp'+( sk>0 ? ' &middot; '+dots+' stroke'+(sk>1?'s':'') : '')+'</div></div>';
         h+='<div class="s-psr-score">';
         h+='<button class="s-score-btn" data-sh="'+hi+'" data-sd="-1" data-sp="'+pname+'">&minus;</button>';
-        h+='<div class="s-score-val'+(g===null?' empty':'')+'">'+(g!==null?g:'&ndash;')+'</div>';
+        var scoreDiff = g!==null ? g - ho.par : null;
+        var scoreShapeCls = g===null?'':scoreDiff<=-2?' gs-eagle':scoreDiff===-1?' gs-birdie':scoreDiff===0?'':scoreDiff===1?' gs-bogey':scoreDiff===2?' gs-dbl':' gs-triple';
+        var scoreShapeStyle = g!==null&&scoreDiff!==0?'width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;':'';
+        h+='<div class="s-score-val'+(g===null?' empty':'')+scoreShapeCls+'" style="'+scoreShapeStyle+'">'+(g!==null?g:'&ndash;')+'</div>';
         h+='<button class="s-score-btn" data-sh="'+hi+'" data-sd="1" data-sp="'+pname+'">+</button>';
         h+='</div>';
         h+='<div class="s-psr-pts sp-'+(pts!==null?Math.min(pts,5):'null')+'">'+(pts!==null?pts:'&ndash;')+'</div>';
@@ -947,9 +966,7 @@ function renderScorer(){
           for(var fi=0;fi<9;fi++){
             var gs=ss.scores[pname][ss.course][fi];
             if(gs!==null){frontTotal+=gs;frontHas=true;}
-            var diff=gs!==null?gs-c.holes[fi].par:null;
-            var bg=diff!==null?(scoreColorsH[diff<=-2?'-2':diff>=3?'3':String(diff)]||'var(--sand)'):'transparent';
-            h+='<div style="flex:1;text-align:center;font-size:11px;font-weight:700;'+(gs!==null?'color:var(--white);background:'+bg+';border-radius:4px;margin:0 1px;padding:1px 0;':'color:var(--sand-dark);')+'">'+(gs!==null?gs:'&ndash;')+'</div>';
+            h+='<div style="flex:1;display:flex;align-items:center;justify-content:center;">'+golfScoreCell(gs, c.holes[fi].par)+'</div>';
           }
           h+='<div style="width:28px;text-align:center;font-size:11px;font-weight:700;color:var(--ink);">'+(frontHas?frontTotal:'&ndash;')+'</div>';
           h+='</div>';
@@ -979,9 +996,7 @@ function renderScorer(){
           for(var bi=9;bi<18;bi++){
             var gs=ss.scores[pname][ss.course][bi];
             if(gs!==null){backTotal+=gs;backHas=true;}
-            var diff=gs!==null?gs-c.holes[bi].par:null;
-            var bg=diff!==null?(scoreColorsH[diff<=-2?'-2':diff>=3?'3':String(diff)]||'var(--sand)'):'transparent';
-            h+='<div style="flex:1;text-align:center;font-size:11px;font-weight:700;'+(gs!==null?'color:var(--white);background:'+bg+';border-radius:4px;margin:0 1px;padding:1px 0;':'color:var(--sand-dark);')+'">'+(gs!==null?gs:'&ndash;')+'</div>';
+            h+='<div style="flex:1;display:flex;align-items:center;justify-content:center;">'+golfScoreCell(gs, c.holes[bi].par)+'</div>';
           }
           h+='<div style="width:28px;text-align:center;font-size:11px;font-weight:700;color:var(--ink);">'+(backHas?backTotal:'&ndash;')+'</div>';
           h+='</div>';
@@ -999,20 +1014,111 @@ function renderScorer(){
     }
 
   } else if(ss.view==='leaderboard'){
-    h+='<div class="s-lb-row" style="font-size:11px;color:var(--ink3);font-weight:600;border-bottom:1px solid var(--sand-dark);">';
+    // Over/under helper
+    function fmtOU(ou,thru){if(thru===0)return'&ndash;';if(ou===0)return'E';return(ou>0?'+':'')+ou;}
+    function ouColor(ou){if(ou<0)return'var(--fairway)';if(ou===0)return'var(--ink)';return'var(--red)';}
+
+    // CTP winners banner
+    var ctpDesLB = ss.course === 'verdict' ? [8, 13] : [2, 12];
+    var hasAnyCtp = false;
+    ctpDesLB.forEach(function(hNum){
+      var cd = ss.ctp[ss.course][hNum-1];
+      if(cd && cd.leader && (cd.status==='marked'||cd.status==='final')) hasAnyCtp=true;
+    });
+    if(hasAnyCtp){
+      h+='<div style="margin:10px 14px;padding:10px 12px;background:var(--mint-bg);border-radius:8px;border:1px solid var(--fairway);">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--fairway);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Closest to the pin</div>';
+      ctpDesLB.forEach(function(hNum){
+        var cd = ss.ctp[ss.course][hNum-1];
+        if(!cd || !cd.leader) return;
+        var isFinal = cd.status==='final';
+        var label = isFinal ? 'Winner' : 'Leader';
+        h+='<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:13px;">';
+        h+='<span style="color:var(--ink);">Hole '+hNum+' <span style="font-size:11px;color:'+(isFinal?'var(--fairway)':'var(--amber)')+';font-weight:600;">'+label+'</span></span>';
+        h+='<span style="font-weight:700;color:var(--pine);">'+cd.leader+(isFinal?' ($'+(PLAYERS.length*5)+')':'')+'</span>';
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+
+    h+='<div class="s-lb-row" style="font-size:10px;color:var(--ink3);font-weight:600;border-bottom:1px solid var(--sand-dark);padding:8px 14px;">';
     h+='<div class="s-lb-rank"></div><div class="s-lb-name" style="color:var(--ink3);font-weight:600;">Player</div>';
-    h+='<div style="min-width:36px;text-align:right;">Gross</div>';
-    h+='<div style="min-width:36px;text-align:right;">Net</div>';
-    h+='<div class="s-lb-pts" style="color:var(--ink3);font-size:13px;">Pts</div>';
+    h+='<div style="min-width:32px;text-align:right;">+/-</div>';
+    h+='<div style="min-width:30px;text-align:right;">Gross</div>';
+    h+='<div style="min-width:30px;text-align:right;">Net</div>';
+    h+='<div class="s-lb-pts" style="color:var(--ink3);font-size:10px;">Pts</div>';
     h+='<div class="s-lb-thru">Thru</div></div>';
-    var lb=PLAYERS.map(function(pl){var s2=pStats(pl.name,ss.course);return{name:pl.name,hdcp:pl.hdcp,total:s2.total,thru:s2.thru,gross:s2.gross,net:s2.net};}).sort(function(a,b){return b.total-a.total||a.hdcp-b.hdcp;});
+
+    var lb=PLAYERS.map(function(pl){var s2=pStats(pl.name,ss.course);return{name:pl.name,hdcp:pl.hdcp,total:s2.total,thru:s2.thru,gross:s2.gross,net:s2.net,overUnder:s2.overUnder};}).sort(function(a,b){return b.total-a.total||a.hdcp-b.hdcp;});
     var lp=-1,lr=0;
     lb.forEach(function(pl,i){var rk;if(pl.total!==lp){rk=i+1;lr=rk;}else rk=lr;lp=pl.total;
       h+='<div class="s-lb-row"><div class="s-lb-rank'+(rk<=3&&pl.thru>0?' top':'')+'">'+rk+'</div><div class="s-lb-name">'+pl.name+'<span class="s-lb-hdcp">'+pl.hdcp.toFixed(1)+'</span></div>';
-      h+='<div style="min-width:36px;text-align:right;font-size:13px;color:var(--ink2);">'+(pl.thru>0?pl.gross:'&ndash;')+'</div>';
-      h+='<div style="min-width:36px;text-align:right;font-size:13px;color:var(--ink2);">'+(pl.thru>0?pl.net:'&ndash;')+'</div>';
+      h+='<div style="min-width:32px;text-align:right;font-size:14px;font-weight:700;color:'+ouColor(pl.overUnder)+';">'+fmtOU(pl.overUnder,pl.thru)+'</div>';
+      h+='<div style="min-width:30px;text-align:right;font-size:12px;color:var(--ink2);">'+(pl.thru>0?pl.gross:'&ndash;')+'</div>';
+      h+='<div style="min-width:30px;text-align:right;font-size:12px;color:var(--ink2);">'+(pl.thru>0?pl.net:'&ndash;')+'</div>';
       h+='<div class="s-lb-pts">'+pl.total+'</div><div class="s-lb-thru">'+(pl.thru>0?'thru '+pl.thru:'&ndash;')+'</div></div>';
     });
+
+    // Prize money summary
+    var anyScored = lb.some(function(pl){return pl.thru>0;});
+    if(anyScored) {
+      h+='<div style="margin:14px 14px 0;padding:14px;background:var(--sand);border-radius:10px;">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--bark);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Prize money</div>';
+
+      // Main pot: 60/30/10
+      var sorted = lb.filter(function(p){return p.thru>0;}).sort(function(a,b){return b.total-a.total;});
+      var potTotal = PLAYERS.length * 20;
+      var places = [{pct:0.6,label:'1st'},{pct:0.3,label:'2nd'},{pct:0.1,label:'3rd'}];
+      h+='<div style="font-size:12px;font-weight:600;color:var(--pine);margin-bottom:4px;">Main pot ($'+potTotal+')</div>';
+      places.forEach(function(place,idx){
+        var winner = sorted[idx] ? sorted[idx].name : 'TBD';
+        var amt = Math.round(potTotal * place.pct);
+        h+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;">';
+        h+='<span style="color:var(--ink);">'+place.label+': '+winner+'</span>';
+        h+='<span style="font-weight:700;color:var(--fairway);">$'+amt+'</span>';
+        h+='</div>';
+      });
+
+      // CTP
+      var ctpDesignated = ss.course === 'verdict' ? [8, 13] : [2, 12];
+      var ctpPot = PLAYERS.length * 5;
+      h+='<div style="font-size:12px;font-weight:600;color:var(--pine);margin-top:10px;margin-bottom:4px;">CTP ($'+ctpPot+' per hole)</div>';
+      ctpDesignated.forEach(function(hNum){
+        var ctpData = ss.ctp[ss.course][hNum-1];
+        var winner = (ctpData && ctpData.leader && ctpData.status==='final') ? ctpData.leader : 'TBD';
+        h+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;">';
+        h+='<span style="color:var(--ink);">Hole '+hNum+': '+winner+'</span>';
+        h+='<span style="font-weight:700;color:var(--fairway);">$'+ctpPot+'</span>';
+        h+='</div>';
+      });
+
+      // Net summary
+      h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--sand-dark);">';
+      var netAmounts = {};
+      PLAYERS.forEach(function(p){netAmounts[p.name] = -(20 + 10);}); // buy-in: $20 pot + $10 CTP
+      // Main pot payouts
+      places.forEach(function(place,idx){
+        if(sorted[idx]) netAmounts[sorted[idx].name] += Math.round(potTotal * place.pct);
+      });
+      // CTP payouts
+      ctpDesignated.forEach(function(hNum){
+        var ctpData = ss.ctp[ss.course][hNum-1];
+        if(ctpData && ctpData.leader && ctpData.status==='final') {
+          netAmounts[ctpData.leader] += ctpPot;
+        }
+      });
+      var netSorted = Object.entries(netAmounts).sort(function(a,b){return b[1]-a[1];});
+      h+='<div style="font-size:12px;font-weight:600;color:var(--pine);margin-bottom:4px;">Net winnings/losses</div>';
+      netSorted.forEach(function(e){
+        var clr = e[1]>0?'var(--fairway)':e[1]<0?'var(--red)':'var(--ink2)';
+        h+='<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:13px;">';
+        h+='<span style="color:var(--ink);">'+e[0]+'</span>';
+        h+='<span style="font-weight:700;color:'+clr+';">'+(e[1]>=0?'+':'')+' $'+e[1]+'</span>';
+        h+='</div>';
+      });
+      h+='</div>';
+      h+='</div>';
+    }
 
   } else {
     // CTP tracker - designated holes per course
@@ -1110,48 +1216,60 @@ function bindScorer(){
 
 function renderStats(){
   var c=COURSES[ss.course];
+  var statsCourse = ss.statsCourse || ss.course;
   var h='';
 
   h+='<div class="s-course-sel">';
-  ['verdict','birkdale'].forEach(function(ck){
-    var cc=COURSES[ck];
-    h+='<button class="s-cbtn'+(ss.course===ck?' act':'')+'" data-sc="'+ck+'">'+cc.name+'<span class="sc-day">'+cc.day+' - Par '+cc.par+'</span></button>';
+  ['verdict','birkdale','all'].forEach(function(ck){
+    var label = ck==='all'?'All rounds':COURSES[ck]?COURSES[ck].name:'';
+    var sub = ck==='all'?'Combined':COURSES[ck]?COURSES[ck].day+' - Par '+COURSES[ck].par:'';
+    h+='<button class="s-cbtn'+(statsCourse===ck?' act':'')+'" data-statsc="'+ck+'">'+label+'<span class="sc-day">'+sub+'</span></button>';
   });
   h+='</div>';
 
   function getDetailedStats(name, ck) {
-    var p = PLAYERS.find(function(x){return x.name===name;});
-    var c2 = COURSES[ck];
+    var courses = ck==='all'?['verdict','birkdale']:[ck];
     var counts = {eagle:0,birdie:0,par:0,bogey:0,dbl:0,triple:0};
-    var played = 0;
-    var par3avg=0,par4avg=0,par5avg=0,par3n=0,par4n=0,par5n=0;
+    var played=0,par3avg=0,par4avg=0,par5avg=0,par3n=0,par4n=0,par5n=0;
     var front=0,back=0,frontN=0,backN=0;
-    var best=99,worst=0,bestHole=0,worstHole=0;
-    for(var i=0;i<18;i++){
-      var g=ss.scores[name][ck][i];
-      if(g===null) continue;
-      played++;
-      var ho=c2.holes[i];
-      var diff=g-ho.par;
-      if(diff<=-2) counts.eagle++;
-      else if(diff===-1) counts.birdie++;
-      else if(diff===0) counts.par++;
-      else if(diff===1) counts.bogey++;
-      else if(diff===2) counts.dbl++;
-      else counts.triple++;
-      if(ho.par===3){par3avg+=g;par3n++;}
-      if(ho.par===4){par4avg+=g;par4n++;}
-      if(ho.par===5){par5avg+=g;par5n++;}
-      if(i<9){front+=g;frontN++;}else{back+=g;backN++;}
-      if(g<best){best=g;bestHole=ho.num;}
-      if(g>worst){worst=g;worstHole=ho.num;}
-    }
+    var best=99,worst=0,bestHole=0,worstHole=0,bestCourse='',worstCourse='';
+    var totalGross=0,totalNet=0,totalPar=0,totalPts=0,totalThru=0;
+
+    courses.forEach(function(ckey){
+      var p = PLAYERS.find(function(x){return x.name===name;});
+      var c2 = COURSES[ckey];
+      for(var i=0;i<18;i++){
+        var g=ss.scores[name][ckey][i];
+        if(g===null) continue;
+        played++;
+        var ho=c2.holes[i];
+        var diff=g-ho.par;
+        var sk=getStrokes(p.hdcp,ho.hdcp);
+        var pts=stPts(g,ho.par,sk);
+        if(pts!==null){totalPts+=pts;totalThru++;}
+        totalGross+=g;totalNet+=g-sk;totalPar+=ho.par;
+        if(diff<=-2) counts.eagle++;
+        else if(diff===-1) counts.birdie++;
+        else if(diff===0) counts.par++;
+        else if(diff===1) counts.bogey++;
+        else if(diff===2) counts.dbl++;
+        else counts.triple++;
+        if(ho.par===3){par3avg+=g;par3n++;}
+        if(ho.par===4){par4avg+=g;par4n++;}
+        if(ho.par===5){par5avg+=g;par5n++;}
+        if(i<9){front+=g;frontN++;}else{back+=g;backN++;}
+        if(g<best){best=g;bestHole=ho.num;bestCourse=c2.name;}
+        if(g>worst){worst=g;worstHole=ho.num;worstCourse=c2.name;}
+      }
+    });
     return {counts:counts,played:played,
       par3avg:par3n>0?Math.round(par3avg/par3n*10)/10:0,par3n:par3n,
       par4avg:par4n>0?Math.round(par4avg/par4n*10)/10:0,par4n:par4n,
       par5avg:par5n>0?Math.round(par5avg/par5n*10)/10:0,par5n:par5n,
       front:front,frontN:frontN,back:back,backN:backN,
-      best:best,bestHole:bestHole,worst:worst,worstHole:worstHole};
+      best:best,bestHole:bestHole,bestCourse:bestCourse,worst:worst,worstHole:worstHole,worstCourse:worstCourse,
+      totalGross:totalGross,totalNet:totalNet,totalPar:totalPar,totalPts:totalPts,totalThru:totalThru,
+      overUnder:totalGross-totalPar};
   }
 
   function renderDonut(counts, played, size) {
@@ -1206,24 +1324,55 @@ function renderStats(){
     var allCounts = {eagle:0,birdie:0,par:0,bogey:0,dbl:0,triple:0};
     var allPlayed = 0;
     PLAYERS.forEach(function(pl){
-      var ds = getDetailedStats(pl.name, ss.course);
+      var ds = getDetailedStats(pl.name, statsCourse);
       Object.keys(allCounts).forEach(function(k){ allCounts[k]+=ds.counts[k]; });
       allPlayed += ds.played;
     });
     h+='<div style="padding:16px 14px 8px;font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--pine);">Field overview</div>';
     h+=renderDonut(allCounts, allPlayed, 160);
 
+    // CTP winners in stats
+    var statsCourses = statsCourse==='all'?['verdict','birkdale']:[statsCourse];
+    var hasCtpStats = false;
+    statsCourses.forEach(function(ckey){
+      var ctpDes = ckey==='verdict'?[8,13]:[2,12];
+      ctpDes.forEach(function(hNum){
+        var cd = ss.ctp[ckey][hNum-1];
+        if(cd && cd.leader) hasCtpStats=true;
+      });
+    });
+    if(hasCtpStats){
+      h+='<div style="margin:12px 14px;padding:10px 12px;background:var(--mint-bg);border-radius:8px;">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--fairway);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Closest to the pin</div>';
+      statsCourses.forEach(function(ckey){
+        var cc=COURSES[ckey];
+        var ctpDes = ckey==='verdict'?[8,13]:[2,12];
+        if(statsCourse==='all') h+='<div style="font-size:12px;font-weight:600;color:var(--pine);margin-bottom:2px;'+(ckey!=='verdict'?'margin-top:6px;':'')+'">'+cc.name+'</div>';
+        ctpDes.forEach(function(hNum){
+          var cd = ss.ctp[ckey][hNum-1];
+          var winner = (cd && cd.leader) ? cd.leader : 'TBD';
+          var isFinal = cd && cd.status==='final';
+          var statusLabel = isFinal?'Winner':cd&&cd.status==='marked'?'Leader':'Open';
+          var statusClr = isFinal?'var(--fairway)':cd&&cd.status==='marked'?'var(--amber)':'var(--ink3)';
+          h+='<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:13px;">';
+          h+='<span style="color:var(--ink);">Hole '+hNum+' <span style="font-size:11px;color:'+statusClr+';font-weight:600;">'+statusLabel+'</span></span>';
+          h+='<span style="font-weight:700;color:var(--pine);">'+winner+'</span>';
+          h+='</div>';
+        });
+      });
+      h+='</div>';
+    }
+
     h+='<div style="padding:14px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">By player</div>';
     var barColors = {eagle:'#D4AF37',birdie:'#1D9E75',par:'#3A7A5A',bogey:'#BA7517',dbl:'#D85A30',triple:'#C0392B'};
     var barOrder = ['eagle','birdie','par','bogey','dbl','triple'];
     PLAYERS.forEach(function(pl){
-      var ds = getDetailedStats(pl.name, ss.course);
+      var ds = getDetailedStats(pl.name, statsCourse);
       if(ds.played === 0) return;
       h+='<div style="padding:8px 14px;border-bottom:1px solid var(--sand);cursor:pointer;" data-statspl="'+pl.name+'">';
       h+='<div style="display:flex;justify-content:space-between;margin-bottom:4px;">';
       h+='<span style="font-size:13px;font-weight:600;color:var(--ink);">'+pl.name+'</span>';
-      var s3=pStats(pl.name,ss.course);
-      h+='<span style="font-size:12px;color:var(--ink3);">'+s3.gross+' ('+s3.net+' net) &middot; '+s3.total+' pts</span>';
+      h+='<span style="font-size:12px;color:var(--ink3);">'+ds.totalGross+' ('+(ds.overUnder>=0?'+':'')+ds.overUnder+') &middot; '+ds.totalPts+' pts</span>';
       h+='</div>';
       h+='<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;">';
       barOrder.forEach(function(k){
@@ -1235,18 +1384,20 @@ function renderStats(){
     });
   } else {
     var plStat = PLAYERS.find(function(x){return x.name===ss.statsPlayer;});
-    var ds = getDetailedStats(ss.statsPlayer, ss.course);
-    var s2 = pStats(ss.statsPlayer, ss.course);
+    var ds = getDetailedStats(ss.statsPlayer, statsCourse);
 
     h+='<div style="padding:16px 14px 8px;font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--pine);">'+ss.statsPlayer+'</div>';
 
     if(ds.played === 0) {
       h+='<div style="padding:20px 14px;text-align:center;color:var(--ink3);font-size:13px;">No scores entered yet</div>';
     } else {
-      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:0 14px 12px;">';
-      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Gross</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+s2.gross+'</div></div>';
-      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Net</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+s2.net+'</div></div>';
-      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Pts</div><div style="font-size:18px;font-weight:700;color:var(--pine);">'+s2.total+'</div></div>';
+      var ouColor = ds.overUnder<0?'var(--fairway)':ds.overUnder===0?'var(--ink)':'var(--red)';
+      var ouText = ds.overUnder===0?'E':(ds.overUnder>0?'+':'')+ds.overUnder;
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;padding:0 14px 12px;">';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">+/-</div><div style="font-size:18px;font-weight:700;color:'+ouColor+';">'+ouText+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Gross</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+ds.totalGross+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Net</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+ds.totalNet+'</div></div>';
+      h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Pts</div><div style="font-size:18px;font-weight:700;color:var(--pine);">'+ds.totalPts+'</div></div>';
       h+='<div style="background:var(--sand);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;">Hdcp</div><div style="font-size:18px;font-weight:700;color:var(--ink);">'+plStat.hdcp.toFixed(1)+'</div></div>';
       h+='</div>';
 
@@ -1271,23 +1422,28 @@ function renderStats(){
 
       h+='<div style="padding:4px 14px 4px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;">Hole by hole</div>';
       var scoreColors2 = {'-2':'#D4AF37','-1':'#1D9E75','0':'#3A7A5A','1':'#BA7517','2':'#D85A30','3':'#C0392B'};
-      for(var i=0;i<18;i++){
-        var g=ss.scores[ss.statsPlayer][ss.course][i];
-        if(g===null) continue;
-        var ho=c.holes[i];
-        var diff=g-ho.par;
-        var diffKey = diff<=-2?'-2':diff>=3?'3':String(diff);
-        var diffLabel = diff<=-2?'Eagle+':diff===-1?'Birdie':diff===0?'Par':diff===1?'Bogey':diff===2?'Double':'Triple+';
-        var sk=getStrokes(plStat.hdcp,ho.hdcp);
-        var pts=stPts(g,ho.par,sk);
-        h+='<div style="display:flex;align-items:center;padding:6px 14px;border-bottom:1px solid var(--sand);font-size:13px;">';
-        h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+ho.num+'</div>';
-        h+='<div style="width:40px;color:var(--ink3);">Par '+ho.par+'</div>';
-        h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+g+'</div>';
-        h+='<div style="flex:1;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:'+(scoreColors2[diffKey]||'var(--sand)')+';color:var(--white);">'+diffLabel+'</span></div>';
-        h+='<div style="width:28px;text-align:right;font-weight:700;color:var(--pine);">'+pts+'</div>';
-        h+='</div>';
-      }
+      var coursesToShow = statsCourse==='all'?['verdict','birkdale']:[statsCourse];
+      coursesToShow.forEach(function(ckey){
+        var cc=COURSES[ckey];
+        if(statsCourse==='all') h+='<div style="padding:8px 14px 4px;font-size:12px;font-weight:700;color:var(--pine);">'+cc.name+'</div>';
+        for(var i=0;i<18;i++){
+          var g=ss.scores[ss.statsPlayer][ckey][i];
+          if(g===null) continue;
+          var ho=cc.holes[i];
+          var diff=g-ho.par;
+          var diffKey = diff<=-2?'-2':diff>=3?'3':String(diff);
+          var diffLabel = diff<=-2?'Eagle+':diff===-1?'Birdie':diff===0?'Par':diff===1?'Bogey':diff===2?'Double':'Triple+';
+          var sk=getStrokes(plStat.hdcp,ho.hdcp);
+          var pts=stPts(g,ho.par,sk);
+          h+='<div style="display:flex;align-items:center;padding:6px 14px;border-bottom:1px solid var(--sand);font-size:13px;">';
+          h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+ho.num+'</div>';
+          h+='<div style="width:40px;color:var(--ink3);">Par '+ho.par+'</div>';
+          h+='<div style="width:32px;font-weight:700;color:var(--ink);">'+g+'</div>';
+          h+='<div style="flex:1;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:'+(scoreColors2[diffKey]||'var(--sand)')+';color:var(--white);">'+diffLabel+'</span></div>';
+          h+='<div style="width:28px;text-align:right;font-weight:700;color:var(--pine);">'+pts+'</div>';
+          h+='</div>';
+        }
+      });
     }
   }
 
@@ -1300,8 +1456,8 @@ function renderStats(){
       renderStats();
     });
   });
-  document.querySelectorAll('#statsApp [data-sc]').forEach(function(b){
-    b.addEventListener('click',function(){ss.course=b.dataset.sc;renderStats();});
+  document.querySelectorAll('#statsApp [data-statsc]').forEach(function(b){
+    b.addEventListener('click',function(){ss.statsCourse=b.dataset.statsc;renderStats();});
   });
 }
 
